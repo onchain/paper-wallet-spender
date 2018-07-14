@@ -1,0 +1,13 @@
+name: paper-wallet-spender
+version: 0.1.0
+
+authors:
+  - John Doe <johndoe@example.com>
+
+targets:
+  paper-wallet-spender:
+    main: src/paper-wallet-spender.cr
+
+crystal: 0.24.2
+
+license: MIT
