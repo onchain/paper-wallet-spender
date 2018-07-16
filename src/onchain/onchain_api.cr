@@ -124,7 +124,10 @@ module OnChain
   def self.to_bytes(hex : String) : Slice
   
     bytes = [] of UInt8
-    hex.to_slice.each_slice(2) { |s| bytes << ((s[0] - 48) * 16) + s[1] - 48  }
+    
+    (0...hex.size).step(2) do |i|
+      bytes << (hex[i].to_s + hex[i+1].to_s).to_i(16).to_u8
+    end
     
     buf = Pointer(UInt8).malloc(bytes.size)
     appender = buf.appender

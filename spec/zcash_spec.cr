@@ -27,9 +27,9 @@ describe OnChain::Protocol do
     
     tx.join_split_size.should eq(0)
     
-    tx.outputs[0].value.should eq(5518896)
+    tx.outputs[0].value.should eq(3000000)
     tx.outputs[1].value.should eq(30000)
-    tx.outputs[2].value.should eq(495970)
+    tx.outputs[2].value.should eq(486091)
     
     generated_tx = tx.to_hex
     

@@ -10,6 +10,7 @@ module OnChain
         buffer = IO::Memory.new
         
         buffer.write_bytes(ver, IO::ByteFormat::LittleEndian)
+        buffer.write_bytes(version_group_id, IO::ByteFormat::LittleEndian)
       
         return OnChain.to_hex buffer.to_slice
       end
