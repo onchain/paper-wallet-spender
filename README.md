@@ -20,7 +20,7 @@ We will make binaries available soon.
 
 ## Development
 
-TODO: Write development instructions here
+1. We recommend you install sentry to build and watch files. https://github.com/samueleaton/sentry
 
 ## Contributing
 
