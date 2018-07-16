@@ -1,14 +1,22 @@
-# paper-wallet-spender
+# Paper Wallet Spender
 
-TODO: Write a description here
+The paper wallet spender takes private keys and generates a spend transaction to transfer funds out of the wallet.
+
+The transction transfers 1% of the funds to the developer. This helps us maintain the project.
 
 ## Installation
 
-TODO: Write installation instructions here
+We will make binaries available soon.
+
+## Build and Install
+
+We will make binaries available soon.
 
 ## Usage
 
-TODO: Write usage instructions here
+1. Install the Crystal language, https://crystal-lang.org/docs/installation/
+2. Clone this repository
+3. CD into the folder
 
 ## Development
 
