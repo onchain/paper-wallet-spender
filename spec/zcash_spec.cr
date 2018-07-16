@@ -18,6 +18,8 @@ describe OnChain::Protocol do
     tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
   
     tx.class.should eq(OnChain::Protocol::UTXOTransaction)
+    
+    tx.ver.should eq(3)
   end
   
 end

@@ -120,4 +120,16 @@ module OnChain
     end
     return response.status_code
   end
+  
+  def self.to_bytes(hex : String) : Slice
+  
+    bytes = [] of UInt8
+    hex.to_slice.each_slice(2) { |s| bytes << ((s[0] - 48) * 16) + s[1] - 48  }
+    
+    buf = Pointer(UInt8).malloc(bytes.size)
+    appender = buf.appender
+    bytes.each{ |byte| appender << byte }
+    return Slice.new(buf, appender.size.to_i32)
+    
+  end
 end

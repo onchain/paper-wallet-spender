@@ -3,7 +3,6 @@ module OnChain
     abstract class Transaction
     
       abstract def to_hex : String
-      abstract def from_hex(hex : String)
       
       def self.create(coin : CoinType, from : String, to : String, 
         amount : BigInt)
