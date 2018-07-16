@@ -2,10 +2,14 @@ module OnChain
   module Protocol
     class UTXOTransaction
     
-      def to_hex(coin : CoinType) : String
+      def to_hex : String
       end
       
-      def from_hex(coin : CoinType, hex_tx : String)
+      def from_hex(hex_tx : String)
+      end
+      
+      def initialize(hex_tx : String)
+        from_hex(hex_tx)
       end
       
     end

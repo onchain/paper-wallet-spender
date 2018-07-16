@@ -21,6 +21,8 @@ We will make binaries available soon.
 ## Development
 
 1. We recommend you install sentry to build and watch files. https://github.com/samueleaton/sentry
+2. ./sentry -w "./src/**/*.cr" -w "./spec/**/*.cr" -r "crystal" --run-args "spec --debug"
+3. Edit code and save, sentry will compile the code and run the tests.
 
 ## Contributing
 

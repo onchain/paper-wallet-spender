@@ -2,10 +2,24 @@ module OnChain
   module Protocol
     abstract class Transaction
     
-      abstract def to_hex(coin : CoinType) : String
-      abstarct def from_hex(coin : CoinType, hex_tx : String)
+      abstract def to_hex : String
+      abstract def from_hex(hex : String)
       
-      def create(coin : CoinType, from : String, to : String, amount : BigInt)
+      def self.create(coin : CoinType, from : String, to : String, 
+        amount : BigInt)
+      end
+      
+      def self.create(coin : CoinType, hex : String)
+        
+        tx = case coin
+        when CoinType::ZCash
+          UTXOTransaction.new(hex)
+        else
+          raise "Currency not supported"
+        end
+        
+        return tx
+          
       end
       
     end
