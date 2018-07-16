@@ -2,7 +2,9 @@ module OnChain
   module Protocol
     class UTXOTransaction < Transaction
     
-      property ver : UInt8
+      property ver : UInt32
+      property inputs : Array(UTXOInput)
+      property outputs : Array(UTXOOutput)
     
       def to_hex : String
       end
@@ -13,15 +15,26 @@ module OnChain
         
         buffer = IO::Memory.new(slice)
         
-        v = buffer.read_byte
-        b : UInt8 = if v
-          v
-        else
-          0.to_u8
+        @ver = readUInt32(buffer)
+        @inputs = parse_inputs(buffer)
+        
+        @outputs = [] of UTXOOutput
+        
+      end
+      
+      def parse_inputs(buffer : IO::Memory)
+        inputs = [] of UTXOInput
+        in_size = buffer.read_byte
+        if in_size
+          in_size.times{
+            inputs << UTXOInput.new(buffer)
+          }
         end
-        @ver = b
+        return inputs
       end
       
     end
+    
+    
   end
 end

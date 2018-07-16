@@ -17,9 +17,11 @@ describe OnChain::Protocol do
   
     tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
   
-    tx.class.should eq(OnChain::Protocol::UTXOTransaction)
+    tx.class.should eq(OnChain::Protocol::ZCashTransaction)
     
-    tx.ver.should eq(3)
+    tx.ver.should eq(2147483651)
+    
+    tx.inputs.size.should eq(1)
   end
   
 end
