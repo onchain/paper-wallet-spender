@@ -132,4 +132,13 @@ module OnChain
     return Slice.new(buf, appender.size.to_i32)
     
   end
+  
+  def self.to_hex(bytes : Bytes) : String
+    s = ""
+    bytes.each do |b| 
+      hex = b < 16 ? "0" + b.to_s(16) : b.to_s(16)
+      s = s + hex
+    end
+    return s
+  end
 end
