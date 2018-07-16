@@ -22,6 +22,8 @@ describe OnChain::Protocol do
     tx.ver.should eq(2147483651)
     
     tx.inputs.size.should eq(1)
+    
+    tx.outputs.size.should eq(3)
   end
   
 end

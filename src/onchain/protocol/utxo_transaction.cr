@@ -24,13 +24,24 @@ module OnChain
       
       def parse_inputs(buffer : IO::Memory)
         inputs = [] of UTXOInput
-        in_size = buffer.read_byte
+        in_size = Transaction.parse_var_int(buffer)
         if in_size
           in_size.times{
             inputs << UTXOInput.new(buffer)
           }
         end
         return inputs
+      end
+      
+      def parse_outputs(buffer : IO::Memory)
+        outputs = [] of UTXOOutput
+        out_size = Transaction.parse_var_int(buffer)
+        if out_size
+          out_size.times{
+            outputs << UTXOOutput.new(buffer)
+          }
+        end
+        return outputs
       end
       
     end

@@ -14,17 +14,14 @@ module OnChain
         
         buffer = IO::Memory.new(slice)
         
-        @ver = readUInt32(buffer)
-        @version_group_id = readUInt32(buffer)
+        @ver = Transaction.readUInt32(buffer)
+        @version_group_id = Transaction.readUInt32(buffer)
         @inputs = parse_inputs(buffer)
-        
-        @outputs = [] of UTXOOutput
+        @outputs = parse_outputs(buffer)
         
       end
     
-      
     end
-    
     
   end
 end
