@@ -92,6 +92,23 @@ module OnChain
         end
       end
       
+      def self.write_var_int(buffer : IO::Memory, value : UInt64)
+      
+        if value < 253
+          buffer.write_byte(value.to_u8)
+        elsif value >= 253 && value < 65536
+          buffer.write_byte(253.to_u8)
+          buffer.write_bytes(value.to_u16, IO::ByteFormat::LittleEndian)
+        elsif value >= 65536 && value < 4294967296
+          buffer.write_byte(254.to_u8)
+          buffer.write_bytes(value.to_u32, IO::ByteFormat::LittleEndian)
+        else
+          buffer.write_byte(255.to_u8)
+          buffer.write_bytes(value, IO::ByteFormat::LittleEndian)
+        end
+      
+      end
+      
     end
   end
 end

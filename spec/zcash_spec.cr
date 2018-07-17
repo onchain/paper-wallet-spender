@@ -33,7 +33,7 @@ describe OnChain::Protocol do
     
     generated_tx = tx.to_hex
     
-    tx_hex.starts_with?(generated_tx).should eq(true)
+    tx_hex.should eq(generated_tx)
   end
   
 end

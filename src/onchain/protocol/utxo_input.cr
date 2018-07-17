@@ -22,6 +22,16 @@ module OnChain
         @script_sig = sig_slice
         @sequence = Transaction.readUInt32(buffer)
       end
+      
+      def to_buffer(buffer : IO::Memory)
+      
+        buffer.write(prev_out_hash)
+        buffer.write_bytes(prev_out_index, IO::ByteFormat::LittleEndian)
+        Transaction.write_var_int(buffer, script_sig_length)
+        buffer.write(script_sig)
+        buffer.write_bytes(sequence, IO::ByteFormat::LittleEndian)
+      
+      end
     
     end
   end

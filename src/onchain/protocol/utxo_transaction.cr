@@ -5,6 +5,7 @@ module OnChain
       property ver : UInt32
       property inputs : Array(UTXOInput)
       property outputs : Array(UTXOOutput)
+      property lock_time : UInt32
     
       def to_hex : String
       end
@@ -17,8 +18,8 @@ module OnChain
         
         @ver = readUInt32(buffer)
         @inputs = parse_inputs(buffer)
-        
-        @outputs = [] of UTXOOutput
+        @outputs = parse_outputs(buffer)
+        @lock_time = readUInt32(buffer)
         
       end
       

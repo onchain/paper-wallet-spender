@@ -16,6 +16,14 @@ module OnChain
         @pk_script = pk_script_slice
         
       end
+      
+      def to_buffer(buffer : IO::Memory)
+      
+        buffer.write_bytes(value, IO::ByteFormat::LittleEndian)
+        Transaction.write_var_int(buffer, pk_script_length)
+        buffer.write(pk_script)
+      
+      end
     
     end
   end
