@@ -22,6 +22,45 @@ module OnChain
         @join_split_size = Transaction.parse_var_int(buffer)
         
       end
+      
+      # Implementation of ZIP143
+      # https://github.com/zcash/zips/blob/master/zip-0143.rst
+      
+      def signature_hash_for_zcash(input_idx : UInt64, script_code_hex : String, 
+        prev_out_value : UInt64, hash_type : UInt32)
+        
+        buffer = IO::Memory.new
+        
+        # 1. nVersion | fOverwintered
+        buffer.write_bytes(ver, IO::ByteFormat::LittleEndian)
+        
+        # 2. nVersionGroupId
+        buffer.write_bytes(version_group_id, IO::ByteFormat::LittleEndian)
+        
+        # 3. hashPrevouts
+        buffer.write(zcash_hash_outputs)
+        
+        # 4. hashSequence
+        
+        # 5. hashOutputs
+        Transaction.write_var_int(buffer, outputs.size.to_u64)
+        outputs.each do |output|
+          output.to_buffer(buffer)
+        end
+        
+        # 6. hashJoinSplits
+        
+        # 7. nLockTime
+        buffer.write_bytes(lock_time, IO::ByteFormat::LittleEndian)
+        
+        # 8. expiryHeight
+        buffer.write_bytes(expiry_height, IO::ByteFormat::LittleEndian)
+        
+        # 9. nHashType
+        buffer.write_bytes(hash_type, IO::ByteFormat::LittleEndian)
+        
+        return OnChain.to_hex buffer.to_slice
+      end
     
       def to_hex : String
       
@@ -43,10 +82,40 @@ module OnChain
         buffer.write_bytes(lock_time, IO::ByteFormat::LittleEndian)
         buffer.write_bytes(expiry_height, IO::ByteFormat::LittleEndian)
         
-        # Always write zero join splits as we don't support them.
-        Transaction.write_var_int(buffer, 0.to_u64)
+        Transaction.write_var_int(buffer, join_split_size.to_u64)
       
         return OnChain.to_hex buffer.to_slice
+      end
+      
+      # Zcash Personalisation of blake.
+      ZCASH_PREVOUTS_HASH_PERSONALIZATION   = "ZcashPrevoutHash"
+      ZCASH_SEQUENCE_HASH_PERSONALIZATION   = "ZcashSequencHash"
+      ZCASH_OUTPUTS_HASH_PERSONALIZATION    = "ZcashOutputsHash"
+      ZCASH_JOINSPLITS_HASH_PERSONALIZATION = "ZcashJSplitsHash"
+      ZCASH_SIG_HASH_PERSONALIZATION        = "ZcashSigHash"
+      
+      def zcash_prev_outs : Bytes
+        
+        buffer = IO::Memory.new
+        
+        inputs.each do |input|
+          buffer.write(input.prev_out_hash)
+          buffer.write_bytes(input.prev_out_index, IO::ByteFormat::LittleEndian)
+        end
+        
+        return buffer.to_slice
+        
+      end
+      
+      def zcash_hash_outputs : Bytes
+        
+        buffer = IO::Memory.new
+        
+        outputs.each do |output|
+          output.to_buffer(buffer)
+        end
+        
+        buffer.to_slice
       end
     
     end
