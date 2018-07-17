@@ -26,8 +26,7 @@ module OnChain
       # Implementation of ZIP143
       # https://github.com/zcash/zips/blob/master/zip-0143.rst
       
-      def signature_hash_for_zcash(input_idx : UInt64, script_code_hex : String, 
-        prev_out_value : UInt64, hash_type : UInt32)
+      def signature_hash_for_zcash(input_idx : UInt64, prev_out_value : UInt64)
         
         buffer = IO::Memory.new
         
@@ -56,7 +55,7 @@ module OnChain
         buffer.write_bytes(expiry_height, IO::ByteFormat::LittleEndian)
         
         # 9. nHashType
-        buffer.write_bytes(hash_type, IO::ByteFormat::LittleEndian)
+        buffer.write_bytes(0.to_u32, IO::ByteFormat::LittleEndian)
         
         # 10a. outpoint
         buffer.write(inputs[input_idx].prev_out_hash)
@@ -64,7 +63,7 @@ module OnChain
           IO::ByteFormat::LittleEndian)
         
         # 10b. scriptCode
-        buffer.write(OnChain.to_bytes script_code_hex)
+        buffer.write(inputs[input_idx].script_sig)
         
         # 10c. value
         buffer.write_bytes(prev_out_value, IO::ByteFormat::LittleEndian)
