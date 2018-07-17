@@ -25,7 +25,7 @@ module OnChain
       
       txs = [] of Transaction
       if history["items"] != nil
-        history["items"].each do |tx|
+        history["items"].as_a.each do |tx|
           txs << Transaction.from_insight_json tx, addresses
         end
       end
@@ -39,7 +39,7 @@ module OnChain
       
       txs = [] of Transaction
       if history["txrefs"] != nil
-        history["txrefs"].each do |tx|
+        history["txrefs"].as_a.each do |tx|
           txs << Transaction.from_blockcypher_json tx, addresses
         end
       end
@@ -53,7 +53,7 @@ module OnChain
       
       txs = [] of Transaction
       if history["result"] != nil
-        history["result"].each do |tx|
+        history["result"].as_a.each do |tx|
           txs << Transaction.from_blockcypher_json tx, addresses
         end
       end

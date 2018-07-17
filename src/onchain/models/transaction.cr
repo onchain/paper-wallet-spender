@@ -80,7 +80,7 @@ module OnChain
       amount = BigInt.new 0
       address = "Not Found"
       
-      tx["vin"].each do |vin|
+      tx["vin"].as_a.each do |vin|
         addr = vin["addr"] != nil ? vin["addr"].as_s : ""
         am = vin["valueSat"] != nil ? vin["valueSat"].as_i : 0
         
@@ -92,7 +92,7 @@ module OnChain
         end
       end
       
-      tx["vout"].each do |vout|
+      tx["vout"].as_a.each do |vout|
       
         am = vout["value"] != nil ? 
           (Float32.new(vout["value"].as_s) * 100_000_000).to_i : 0

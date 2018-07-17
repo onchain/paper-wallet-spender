@@ -54,7 +54,7 @@ module OnChain
       when String
         utxo = [] of UnspentOut
         json = JSON.parse utxos
-        json.each do |j|
+        json.as_a.each do |j|
           utxo << OnChain::UnspentOut.from_insight_json(j)
         end
         return utxo
