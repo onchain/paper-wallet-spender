@@ -97,6 +97,8 @@ describe OnChain::Protocol do
       "c1fe01f7e9c8e36d6a5e29d4e30a7378af1e40f64e125946f62c2fa7b2fecbcb64b696" +
       "8912a6381ce3dc166d56a1d62f5a8d7")
     
+    puts tx.signature_hash_for_zcash(1, "0153", 365293780370497, 3)
+    
     tx_hex.should eq(generated_tx)
   end
   

@@ -43,12 +43,11 @@ module OnChain
         # 4. hashSequence
         
         # 5. hashOutputs
-        Transaction.write_var_int(buffer, outputs.size.to_u64)
-        outputs.each do |output|
-          output.to_buffer(buffer)
-        end
+        buffer.write(zcash_hash_outputs)
         
         # 6. hashJoinSplits
+        buffer.write(OnChain.to_bytes("00000000000000000000000000000000000000" +
+          "00000000000000000000000000"))
         
         # 7. nLockTime
         buffer.write_bytes(lock_time, IO::ByteFormat::LittleEndian)
@@ -59,6 +58,21 @@ module OnChain
         # 9. nHashType
         buffer.write_bytes(hash_type, IO::ByteFormat::LittleEndian)
         
+        # 10a. outpoint
+        buffer.write(inputs[input_idx].prev_out_hash)
+        buffer.write_bytes(inputs[input_idx].prev_out_index, 
+          IO::ByteFormat::LittleEndian)
+        
+        # 10b. scriptCode
+        buffer.write(OnChain.to_bytes script_code_hex)
+        
+        # 10c. value
+        buffer.write_bytes(prev_out_value, IO::ByteFormat::LittleEndian)
+        
+        # 10d. nSequence
+        buffer.write_bytes(inputs[input_idx].sequence, 
+          IO::ByteFormat::LittleEndian)
+          
         return OnChain.to_hex buffer.to_slice
       end
     
