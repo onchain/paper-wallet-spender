@@ -24,11 +24,11 @@ module OnChain
       total_txs = history["txs"]? != nil ? history["txs"].size : 0
       
       txs = [] of Transaction
-      #if history["items"] != nil
-      #  history["items"].as_a.each do |tx|
-      #    txs << Transaction.from_insight_json tx, addresses
-      #  end
-      #end
+      if history["txs"]? != nil
+        history["txs"].as_a.each do |tx|
+          txs << Transaction.from_blockinfo_json tx, addresses
+        end
+      end
       
       return History.new(total_txs, txs)
     end

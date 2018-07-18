@@ -29,6 +29,62 @@ module OnChain
       end
     end
     
+    def self.from_blockinfo_json(tx : JSON::Any, addresses : Array(String))
+    
+      confirmations = tx["block_height"]? != nil ? tx["block_height"].as_i : 0
+      time = tx["time"]? != nil ? tx["time"].as_i64 : 0.to_i64
+      
+      deposit = true
+      amount = BigInt.new 0
+      address = "Not Found"
+      
+      
+      if tx["inputs"]? != nil
+        tx["inputs"].as_a.each do |vin|
+          if vin["prev_out"]?
+            addr = vin["prev_out"]["addr"]? != nil ? 
+              vin["prev_out"]["addr"].as_s : ""
+            am = vin["prev_out"]["balance"]? != nil ? 
+              vin["prev_out"]["balance"].as_i : 0
+            
+            if addresses.includes? addr
+              # Then this is a TX sent out from the wallet
+              deposit = false
+              address = addr
+              amount = BigInt.new am
+            end
+          end
+        end
+      end
+      
+      if tx["out"]?
+        tx["out"].as_a.each do |vout|
+        
+          am = vout["value"]? != nil ? vout["value"].as_i64 : 0
+          addr = vout["addr"]? != nil ? vout["addr"].as_s : ""
+              
+          # If this is not a deposit assume the first out is what the user
+          # wanted to send and to where
+          if ! deposit
+            address = addr
+            amount = BigInt.new am
+            break
+          end
+          
+          if addresses.includes? addr 
+            address = addr
+            amount = BigInt.new am
+          end
+        end
+      end
+      
+      
+      hbal = amount.to_f64 / 1_00_000_000.0
+      
+      return Transaction.new(confirmations, 
+        time, amount, hbal, address, deposit)
+    end
+    
     def self.from_blockcypher_json(tx : JSON::Any, addresses : Array(String))
     
       confirmations = tx["block_height"] != nil ? tx["block_height"].as_i : 0

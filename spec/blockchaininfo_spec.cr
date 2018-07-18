@@ -84,7 +84,13 @@ describe OnChain::BlockchaininfoProvider do
     addresses = ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak"]
     
     json = JSON.parse(history_json)
-    puts OnChain::History.from_blockinfo_json(json, addresses)
+    history =  OnChain::History.from_blockinfo_json(json, addresses)
+    
+    history.total_txs.should eq(3)
+    
+    history.txs[0].address.should eq("17iESYBf7CQMxCxdabiMfjZRDniGDZkyX3")
+    history.txs[1].address.should eq("36owNcemLHrqW6XXFWyXeedQoErSBWTQFE")
+    history.txs[2].address.should eq("16KBLs5NVpUcrhmcC7eifHuSJjKLufApak")
   end
 
   it "should get a history" do
@@ -92,16 +98,16 @@ describe OnChain::BlockchaininfoProvider do
     provider = OnChain::BlockchaininfoProvider.new(
       OnChain::CoinMarketCapRateProvider.new)
       
-    #history = provider.address_history(OnChain::CoinType::Bitcoin,
-    #  ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak"])
-    #  
-    #case history
-    #when OnChain::History
-    #  history.total_txs.should eq(2)
-    #else
-    #  puts history
-    #  true.should eq(false)
-    #end
+    history = provider.address_history(OnChain::CoinType::Bitcoin,
+      ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak"])
+      
+    case history
+    when OnChain::History
+      history.total_txs.should eq(3)
+    else
+      puts history
+      true.should eq(false)
+    end
   end
   
 end
