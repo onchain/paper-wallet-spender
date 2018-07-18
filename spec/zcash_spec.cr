@@ -97,7 +97,7 @@ describe OnChain::Protocol do
       "c1fe01f7e9c8e36d6a5e29d4e30a7378af1e40f64e125946f62c2fa7b2fecbcb64b696" +
       "8912a6381ce3dc166d56a1d62f5a8d7")
     
-    puts tx.signature_hash_for_zcash(1, 365293780370497)
+    #puts tx.signature_hash_for_zcash(1, 365293780370497)
     
     tx_hex.should eq(generated_tx)
   end
@@ -129,6 +129,55 @@ describe OnChain::Protocol do
     generated_tx = tx.to_hex
     
     tx_hex.should eq(generated_tx)
+  end
+  
+  it "should work for a tx we built" do
+  
+    tx_hex = (<<-TX
+      030000807082c40301f293c1b1d289fba09d0eb40a622a69f70f7b0e5bc3c77bca6ff6db54
+      3ce0a209010000001976a9143a48bfebcdc52c7b3831eab75a1955e58744c7e388acffffff
+      ff03a0860100000000001976a914cfa26596e91ba32e19b0c448523058059841cf8788ac80
+      1a0600000000001976a914b705b67a8c0caeb68bbafe8377da8c19aff1e2e788ac64952e00
+      000000001976a9143a48bfebcdc52c7b3831eab75a1955e58744c7e388ac00000000000000
+      0000
+    TX
+    ).gsub(/\s+/, "")
+  
+    tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
+    
+    tx.ver.should eq(2147483651)
+    
+    generated_tx = tx.to_hex
+    
+    tx_hex.should eq(generated_tx)
+    
+  end
+  
+  it "should work for a tx we built with a hash we know works" do
+  
+    # From onchain-gem 
+    tx_hex = (<<-TX
+      030000807082c4030138e86e187f471ce1ebbaf30463d9995bd56fdd49a25ed5269b148f30
+      6245e06f010000006a4730440220678a2c855cc6beead81aa3c3ddec2e465e9bc8f914cb1b
+      49d7c4cea06f5bb7fd022037eca68d0e7515ca560f2cb98ca6f8973eaf4b140eda206c13fa
+      565c8c116e8f012102a8c45cc289f1a2707f7df4ca5f12348d56e8f48ee9abe86d3b9213e1
+      7922cbc8ffffffff03c0c62d00000000001976a914cfa26596e91ba32e19b0c44852305805
+      9841cf8788ac30750000000000001976a9148da9f29035effc39e4e8f37e82cb8e27fd7ae6
+      1c88accb6a0700000000001976a9148da9f29035effc39e4e8f37e82cb8e27fd7ae61c88ac
+      000000000000000000
+    TX
+    ).gsub(/\s+/, "")
+  
+    tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
+    
+    tx.ver.should eq(2147483651)
+    
+    generated_tx = tx.to_hex
+    
+    tx_hex.should eq(generated_tx)
+    
+    #puts tx.signature_hash_for_zcash(1, 365293780370497)
+    
   end
   
 end

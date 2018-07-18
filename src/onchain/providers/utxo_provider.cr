@@ -10,7 +10,6 @@ module OnChain
     
       response = HTTP::Client.get url + path
       if response.status_code == 200
-      puts response.body
         return response.body
       end
       return response.status_code

@@ -19,6 +19,20 @@ module OnChain
       end
     end
     
+    def self.from_blockinfo_json(history : JSON::Any, addresses : Array(String))
+    
+      total_txs = history["txs"]? != nil ? history["txs"].size : 0
+      
+      txs = [] of Transaction
+      #if history["items"] != nil
+      #  history["items"].as_a.each do |tx|
+      #    txs << Transaction.from_insight_json tx, addresses
+      #  end
+      #end
+      
+      return History.new(total_txs, txs)
+    end
+    
     def self.from_insight_json(history : JSON::Any, addresses : Array(String))
     
       total_txs = history["totalItems"] != nil ? history["totalItems"].as_i : 0
