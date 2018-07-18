@@ -53,14 +53,16 @@ module OnChain
     
       comma_addresses = addresses.join(",")
       
-      utxos = make_request("addrs/#{comma_addresses}/utxo", @url)
+      utxos = make_request("unspent?active=#{comma_addresses}", @url)
       
       case utxos
       when String
         utxo = [] of UnspentOut
         json = JSON.parse utxos
-        json.as_a.each do |j|
-          utxo << OnChain::UnspentOut.from_insight_json(j)
+        if json["unspent_outputs"]? != nil
+          json["unspent_outputs"].as_a.each do |j|
+            utxo << OnChain::UnspentOut.from_blockinfo_json(j)
+          end
         end
         return utxo
       end

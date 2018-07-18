@@ -11,6 +11,16 @@ module OnChain
       @vout : Int32, @script_pub_key : String)
     end
     
+    def self.from_blockinfo_json(utxo : JSON::Any)
+      
+      amount = utxo["value"].as_i
+      txid = utxo["tx_hash_big_endian"].as_s
+      vout = utxo["tx_output_n"].as_i
+      script_pub_key = utxo["script"].as_s
+      
+      return UnspentOut.new(txid, amount, vout, script_pub_key)
+    end
+    
     def self.from_insight_json(utxo : JSON::Any)
       
       amount = utxo["satoshis"].as_i

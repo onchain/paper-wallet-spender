@@ -17,6 +17,55 @@ describe OnChain::BlockchaininfoProvider do
       true.should eq(false)
     end
   end
+  
+  it "should parse unspent outs json" do
+    unspent_outs_json = (<<-UNSPENT
+    {
+    "notice" :"This wallet contains a very large number of unspent outputs. Please consolidate some outputs",
+    "unspent_outputs":[
+    
+        {
+            "tx_hash":"a9d0880dce1db63524f043786785ac30b26f21932c6d45ba75be08871
+            c380929",
+            "tx_hash_big_endian":"2909381c8708be75ba456d2c93216fb230ac85677843f0
+            2435b61dce0d88d0a9",
+            "tx_index":345167106,
+            "tx_output_n": 1,
+            "script":"76a91404d075b3f501deeef5565143282b6cfe8fad5e9488ac",
+            "value": 385780,
+            "value_hex": "05e2f4",
+            "confirmations":11884
+        },
+      
+        {
+            "tx_hash":"75ada4f753a1a5c37c53227e2139d0c2d4172b6b5ab656830689df0c7
+            4c864fd",
+            "tx_hash_big_endian":"fd64c8740cdf89068356b65a6b2b17d4c2d039217e2253
+            7cc3a5a153f7a4ad75",
+            "tx_index":345208737,
+            "tx_output_n": 1,
+            "script":"76a91404d075b3f501deeef5565143282b6cfe8fad5e9488ac",
+            "value": 376300,
+            "value_hex": "05bdec",
+            "confirmations":11854
+        }
+      ]
+    }
+    UNSPENT
+    ).gsub(/\s+/, "")
+    
+    json = JSON.parse(unspent_outs_json)
+    
+    utxo = [] of OnChain::UnspentOut
+    json["unspent_outputs"].as_a.each do |j|
+      utxo << OnChain::UnspentOut.from_blockinfo_json(j)
+    end
+    
+    utxo.size.should eq(2)
+    
+    utxo[0].txid.should eq(
+      "2909381c8708be75ba456d2c93216fb230ac85677843f02435b61dce0d88d0a9")
+  end
 
   it "should parse blockinfo history json" do
   
