@@ -5,7 +5,6 @@ require "./support/**"
 require "./models/**"
 require "./providers/**"
 
-# TODO: Write documentation for `BalanceEngine`
 module OnChain
 
   enum CoinType 
@@ -45,8 +44,10 @@ module OnChain
   ETHEREUM_PROVIDER = BlockCypherEthereumProvider.new(RATE_PROVIDER)
   
   PROVIDERS = {
-    CoinType::Bitcoin => InsightProvider.new(
-      "https://insight.bitpay.com/api/", RATE_PROVIDER),
+    #CoinType::Bitcoin => InsightProvider.new(
+    #  "https://insight.bitpay.com/api/", RATE_PROVIDER),
+    
+    CoinType::Bitcoin => BlockchaininfoProvider.new(RATE_PROVIDER),
       
     CoinType::Testnet3 => InsightProvider.new(
       "https://test-insight.bitpay.com/api/", RATE_PROVIDER),
