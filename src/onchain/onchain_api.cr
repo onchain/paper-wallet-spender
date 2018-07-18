@@ -4,6 +4,7 @@ require "http/client"
 require "./support/**"
 require "./models/**"
 require "./providers/**"
+require "tempfile.cr"
 
 module OnChain
 
@@ -144,5 +145,35 @@ module OnChain
       s = s + hex
     end
     return s
+  end
+  
+  # To get ZCash to work I needed blake2b. Not in crystal yet, or openssl
+  # So I create a python script on the fly and call that.
+  # TODO - Find an alternative.
+  def self.blake2b(data, person)
+  
+    python_script = (<<-PYTHON
+    import hashlib
+    import sys
+    
+    personal = sys.argv[2]
+      
+    if personal == 'ZcashSigHash':
+      personal = b"ZcashSigHash\\x19\\x1b\\xa8\\x5b"
+    else:
+      personal = personal.encode()
+    
+    h = hashlib.blake2b(person = personal, digest_size=32)
+    h.update(bytearray.fromhex(sys.argv[1]))
+    print(h.hexdigest())
+    PYTHON
+    )
+  
+    tempfile = Tempfile.open("blake2b", ".py") do |file|
+      file.print(python_script)
+    end
+    
+    cmd = "python3 #{tempfile.path} '#{data}' '#{person}'"
+    return `#{cmd}`.strip
   end
 end
