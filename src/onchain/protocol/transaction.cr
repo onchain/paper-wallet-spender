@@ -4,8 +4,17 @@ module OnChain
     
       abstract def to_hex : String
       
-      def self.create(coin : CoinType, from : String, to : String, 
-        amount : BigInt)
+      def self.create(coin : CoinType, unspents : Array(UnspentOut))
+      
+        tx = case coin
+        when CoinType::ZCash
+          ZCashTransaction.new
+        else
+          raise "Currency not supported"
+        end
+        
+        return tx
+        
       end
       
       def self.create(coin : CoinType, hex : String)

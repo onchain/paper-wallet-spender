@@ -6,6 +6,18 @@ module OnChain
       property join_split_size : UInt64
       property expiry_height : UInt32
       
+      def initialize
+        
+        @ver = 0
+        @inputs = Array(UTXOInput).new
+        @outputs = Array(UTXOOutput).new
+        @lock_time = 0
+        @version_group_id = 0
+        @expiry_height = 0
+        @join_split_size = 0
+        
+      end
+      
       def initialize(hex_tx : String)
       
         slice = OnChain.to_bytes hex_tx
