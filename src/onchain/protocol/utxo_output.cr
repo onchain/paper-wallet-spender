@@ -41,14 +41,6 @@ module OnChain
         buffer.write(pk_script)
       
       end
-      
-      # generate hash160 tx for given +address+. returns a raw binary script of the form:
-      #  OP_DUP OP_HASH160 <hash160> OP_EQUALVERIFY OP_CHECKSIG
-      #def self.to_hash160_script(hash160 : String)
-      #  return nil  unless hash160
-      #  #  DUP   HASH160  length  hash160    EQUALVERIFY  CHECKSIG
-      #  [ ["76", "a9",    "14",   hash160,   "88",        "ac"].join ].pack("H*")
-      #end
     
     end
   end

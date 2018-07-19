@@ -33,9 +33,9 @@ module OnChain
       def self.address_to_hash160(coin : OnChain::CoinType, 
         network_address : String) : String
         
-        chars_to_miss = OnChain.to_bytes(NETWORKS[coin][:pubKeyHash]).size
+        chars_to_miss = OnChain.to_bytes(NETWORKS[coin][:pubKeyHash]).size * 2
         
-        return decode58(network_address).to_s(16)[chars_to_miss..-1]
+        return decode58(network_address).to_s(16)[chars_to_miss..-9]
         
       end
   
