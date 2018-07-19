@@ -4,11 +4,12 @@ module OnChain
     
       abstract def to_hex : String
       
-      def self.create(coin : CoinType, unspents : Array(UnspentOut))
+      def self.create(coin : CoinType, unspents : Array(UnspentOut),
+        outputs : Array(UTXOOutput))
       
         tx = case coin
         when CoinType::ZCash
-          ZCashTransaction.new
+          ZCashTransaction.new(unspents, outputs)
         else
           raise "Currency not supported"
         end

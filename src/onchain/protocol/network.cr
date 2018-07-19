@@ -29,6 +29,15 @@ module OnChain
           :pubKeyHash => "1CB8"
         }
       }
+      
+      def self.address_to_hash160(coin : OnChain::CoinType, 
+        network_address : String) : String
+        
+        chars_to_miss = OnChain.to_bytes(NETWORKS[coin][:pubKeyHash]).size
+        
+        return decode58(network_address).to_s(16)[chars_to_miss..-1]
+        
+      end
   
       def self.pubhex_to_address(coin : OnChain::CoinType, 
         pub_hex : String) : String

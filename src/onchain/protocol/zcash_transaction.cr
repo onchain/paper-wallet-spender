@@ -6,15 +6,19 @@ module OnChain
       property join_split_size : UInt64
       property expiry_height : UInt32
       
-      def initialize
+      def initialize(unspents : Array(UnspentOut), outputs : Array(UTXOOutput))
         
-        @ver = 0
+        @ver = 2147483651
         @inputs = Array(UTXOInput).new
-        @outputs = Array(UTXOOutput).new
+        @outputs = outputs
         @lock_time = 0
-        @version_group_id = 0
+        @version_group_id = 63210096
         @expiry_height = 0
         @join_split_size = 0
+        
+        unspents.each do |unspent| 
+          @inputs << UTXOInput.new(unspent)
+        end
         
       end
       

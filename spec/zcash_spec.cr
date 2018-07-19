@@ -20,6 +20,7 @@ describe OnChain::Protocol do
     tx.class.should eq(OnChain::Protocol::ZCashTransaction)
     
     tx.ver.should eq(2147483651)
+    tx.version_group_id.should eq(63210096)
     
     tx.inputs.size.should eq(1)
     

@@ -8,6 +8,14 @@ module OnChain
       property script_sig : Bytes
       property sequence : UInt32
     
+      def initialize(unspent : UnspentOut)
+        @prev_out_hash = OnChain.to_bytes(unspent.txid).reverse!
+        @prev_out_index = unspent.vout.to_u32
+        @script_sig = OnChain.to_bytes(unspent.script_pub_key)
+        @script_sig_length = @script_sig.size.to_u64
+        @sequence = 0xffffffff.to_u32
+      end
+    
       def initialize(buffer : IO::Memory)
       
         hash_slice = Slice(UInt8).new(32)

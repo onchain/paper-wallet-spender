@@ -12,7 +12,14 @@ module OnChain
       case unspent_outs
       when Array(UnspentOut)
       
-        tx = Protocol::Transaction.create(coin, unspent_outs)
+        outputs = Array(Protocol::UTXOOutput).new
+        
+        dest_addr_160 = Protocol::Network.address_to_hash160(coin, dest_addr)
+        outputs << Protocol::UTXOOutput.new(amount.to_u64, dest_addr_160)
+        fee_addr_160 = Protocol::Network.address_to_hash160(coin, fee_addr)
+        outputs << Protocol::UTXOOutput.new(fee_satoshi.to_u64, fee_addr_160)
+      
+        tx = Protocol::Transaction.create(coin, unspent_outs, outputs)
         
         hashes_to_sign = Array(HashToSign).new
         return UnsignedTransaction.new(tx.to_hex, 0, hashes_to_sign)
