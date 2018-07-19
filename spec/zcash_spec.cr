@@ -57,12 +57,15 @@ describe OnChain::Protocol do
     
     tx.join_split_size.should eq(0)
     
+    the_hash = OnChain.to_hex tx.signature_hash_for_zcash(0, 0, false)
+      
+    the_hash.should eq(
+      "5f0957950939a65c5a76128eaf552ca8e86066387325bd831f3cd32962ce1a65")
+    
     generated_tx = tx.to_hex
     
-    tx.zcash_prev_outs.size.should eq(0)
-    
-    OnChain.to_hex(tx.zcash_hash_outputs).should eq("8f739811893e0000095200ac" +
-      "6551ac636565b1a45a0805750200025151")
+    OnChain.to_hex(tx.zcash_outputs_hash).should eq(
+      "ec55f4afc6cebfe1c35bdcded7519ff6efb381ab1d5a8dd0060c13b2a512932b")
     
     tx_hex.should eq(generated_tx)
   end
@@ -92,12 +95,14 @@ describe OnChain::Protocol do
     
     generated_tx = tx.to_hex
     
-    OnChain.to_hex(tx.zcash_prev_outs).should eq("4201cfb1cd8dbf69b8250c18ef4" +
-      "1294ca97993db546" +
-      "c1fe01f7e9c8e36d6a5e29d4e30a7378af1e40f64e125946f62c2fa7b2fecbcb64b696" +
-      "8912a6381ce3dc166d56a1d62f5a8d7")
+    OnChain.to_hex(tx.zcash_prev_outs_hash).should eq(
+      "92b8af1f7e12cb8de105af154470a2ae0a11e64a24a514a562ff943ca0f35d7f")
     
-    #puts tx.signature_hash_for_zcash(1, 365293780370497)
+    the_hash = OnChain.to_hex tx.signature_hash_for_zcash(1, 365293780370497)
+    
+    # Not sure if this is right. Need to find another test case.
+    the_hash.should eq(
+      "291014a76f55ddd0e88322156a26deb1c038afc020c0146f40beab42bbdca673")
     
     tx_hex.should eq(generated_tx)
   end
@@ -107,22 +112,25 @@ describe OnChain::Protocol do
   
     # Normal Zcash spend transaction.
     tx_hex = (<<-TX
-      030000807082c40302342847519a9e4b61b1cce0f76eae46c1a77dfe985e94285eed691faf
-      36ebda1d01000000035352653387b4d6cc97bb48c00f6f31fd66c36452b4fbd9fd4d458fe3
-      fbd5e6783f4794dc1ea9d80100000007ac5163ac006553ffffffff037bd1fe010000000003
-      656553e5502c0200000000003203cb040000000003005163000000000000000000
+      030000807082c40304334772ab2297c64a8a1ae8526c4bf136cf4f4e30206e4658eebc7c66
+      0e57e3a00200000007635165636a5200ffffffffadb19de7fcdf37b02ebef327d92eef9699
+      1a6cdf151d0d931161026d584321bd000000000552000052007e7ad2a4f540e8d0b4ccba4a
+      fbc94d452289d7b380c8fdad7121552b3ed07740b5d21f76020000000551ac6a00004b585c
+      eea4909de7ecb564f42899c0f4ccc9ebd406f0e0f19aacf83945a713158051d64d02000000
+      00ffffffff0213eb07000000000001538046e20500000000026a657be3223f0000000000
     TX
     ).gsub(/\s+/, "")
-  
+    #", "ac53536a526352", 1, 503068486, 1991772603, "a53bac078162046c80ddcc7feb6955e9ff6aa11bb2e3e9a15f48eebbabc8f871
+    
     tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
   
     tx.class.should eq(OnChain::Protocol::ZCashTransaction)
     
     tx.ver.should eq(2147483651)
     
-    tx.inputs.size.should eq(2)
+    tx.inputs.size.should eq(4)
     
-    tx.outputs.size.should eq(3)
+    tx.outputs.size.should eq(2)
     
     tx.join_split_size.should eq(0)
     

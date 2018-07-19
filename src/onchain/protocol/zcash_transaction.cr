@@ -26,7 +26,8 @@ module OnChain
       # Implementation of ZIP143
       # https://github.com/zcash/zips/blob/master/zip-0143.rst
       
-      def signature_hash_for_zcash(input_idx : UInt64, prev_out_value : UInt64)
+      def signature_hash_for_zcash(input_idx : UInt64, prev_out_value : UInt64,
+        input = true)
         
         buffer = IO::Memory.new
         
@@ -37,12 +38,13 @@ module OnChain
         buffer.write_bytes(version_group_id, IO::ByteFormat::LittleEndian)
         
         # 3. hashPrevouts
-        buffer.write(zcash_hash_outputs)
+        buffer.write(zcash_prev_outs_hash)
         
         # 4. hashSequence
+        buffer.write(zcash_sequence_hash)
         
         # 5. hashOutputs
-        buffer.write(zcash_hash_outputs)
+        buffer.write(zcash_outputs_hash)
         
         # 6. hashJoinSplits
         buffer.write(OnChain.to_bytes("00000000000000000000000000000000000000" +
@@ -55,24 +57,30 @@ module OnChain
         buffer.write_bytes(expiry_height, IO::ByteFormat::LittleEndian)
         
         # 9. nHashType
-        buffer.write_bytes(0.to_u32, IO::ByteFormat::LittleEndian)
+        buffer.write_bytes(1.to_u32, IO::ByteFormat::LittleEndian)
         
-        # 10a. outpoint
-        buffer.write(inputs[input_idx].prev_out_hash)
-        buffer.write_bytes(inputs[input_idx].prev_out_index, 
-          IO::ByteFormat::LittleEndian)
-        
-        # 10b. scriptCode
-        buffer.write(inputs[input_idx].script_sig)
-        
-        # 10c. value
-        buffer.write_bytes(prev_out_value, IO::ByteFormat::LittleEndian)
-        
-        # 10d. nSequence
-        buffer.write_bytes(inputs[input_idx].sequence, 
-          IO::ByteFormat::LittleEndian)
+        # It's always an input for us, so this is just used to match the 
+        # zip-143 testcase 1
+        if input
+          # 10a. outpoint
+          buffer.write(inputs[input_idx].prev_out_hash)
+          buffer.write_bytes(inputs[input_idx].prev_out_index, 
+            IO::ByteFormat::LittleEndian)
           
-        return OnChain.to_hex buffer.to_slice
+          # 10b. scriptCode
+          Transaction.write_var_int(buffer, 
+            inputs[input_idx].script_sig.size.to_u64)
+          buffer.write(inputs[input_idx].script_sig)
+          
+          # 10c. value
+          buffer.write_bytes(prev_out_value, IO::ByteFormat::LittleEndian)
+          
+          # 10d. nSequence
+          buffer.write_bytes(inputs[input_idx].sequence, 
+            IO::ByteFormat::LittleEndian)
+        end
+          
+        return blake2b_buffer(buffer, ZCASH_SIG_HASH_PERSONALIZATION)
       end
     
       def to_hex : String
@@ -107,7 +115,7 @@ module OnChain
       ZCASH_JOINSPLITS_HASH_PERSONALIZATION = "ZcashJSplitsHash"
       ZCASH_SIG_HASH_PERSONALIZATION        = "ZcashSigHash"
       
-      def zcash_prev_outs : Bytes
+      def zcash_prev_outs_hash : Bytes
         
         buffer = IO::Memory.new
         
@@ -116,11 +124,11 @@ module OnChain
           buffer.write_bytes(input.prev_out_index, IO::ByteFormat::LittleEndian)
         end
         
-        return buffer.to_slice
+        return blake2b_buffer(buffer, ZCASH_PREVOUTS_HASH_PERSONALIZATION)
         
       end
       
-      def zcash_hash_outputs : Bytes
+      def zcash_outputs_hash : Bytes
         
         buffer = IO::Memory.new
         
@@ -128,7 +136,26 @@ module OnChain
           output.to_buffer(buffer)
         end
         
-        buffer.to_slice
+        return blake2b_buffer(buffer, ZCASH_OUTPUTS_HASH_PERSONALIZATION)
+      end
+      
+      def zcash_sequence_hash : Bytes
+        
+        buffer = IO::Memory.new
+        
+        inputs.each do |input|
+          buffer.write_bytes(input.sequence, IO::ByteFormat::LittleEndian)
+        end
+        
+        return blake2b_buffer(buffer, ZCASH_SEQUENCE_HASH_PERSONALIZATION)
+      end
+      
+      def blake2b_buffer(buffer, person) : Bytes
+        
+        hex = OnChain.to_hex buffer.to_slice
+        blake_hex = OnChain.blake2b(hex, person)
+        
+        return OnChain.to_bytes blake_hex
       end
     
     end
