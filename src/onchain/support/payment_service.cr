@@ -5,8 +5,10 @@ module OnChain
   class PaymentService
   
     def self.create(coin : CoinType, pub_hex_keys : Array(String),
-      dest_addr : String, amount_satoshi : BigInt, fee_satoshi : BigInt,
-      fee_addr : String, miners_fee : UInt64) : UnsignedTransaction | NodeStatus
+      dest_addr : String, amount_satoshi : BigInt, 
+      miners_fee : UInt64 = 40000,
+      fee_satoshi : BigInt = 0, fee_addr : String = Nil
+      ) : UnsignedTransaction | NodeStatus
     
       total_amount = amount_satoshi + fee_satoshi + miners_fee
       
