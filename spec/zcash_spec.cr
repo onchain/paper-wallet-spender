@@ -1,5 +1,5 @@
 require "./spec_helper"
-
+  
 describe OnChain::Protocol do
 
   it "should parse and re-generate zcash transaction" do

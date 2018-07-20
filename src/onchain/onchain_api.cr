@@ -81,7 +81,7 @@ module OnChain
     #CoinType::Ethereum => BlockCProvider.new(
     #  "https://api.blockcypher.com/v1/eth/main/"
     #]
-  }
+  } of CoinType => UTXOProvider
   
   def self.make_request(url : String)
   
