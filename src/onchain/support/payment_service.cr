@@ -23,7 +23,9 @@ module OnChain
         outputs << create_output(coin, amount_satoshi.to_u64, dest_addr)
           
         # Our fees
-        outputs << create_output(coin, fee_satoshi.to_u64, fee_addr)
+        if fee_satoshi > DUST_SATOSHIES
+          outputs << create_output(coin, fee_satoshi.to_u64, fee_addr)
+        end
         
         # The change
         change = unspent_outs.total_input_value - total_amount
