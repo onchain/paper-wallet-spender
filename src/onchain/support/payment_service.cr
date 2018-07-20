@@ -17,18 +17,13 @@ module OnChain
       
         outputs = Array(Protocol::UTXOOutput).new
         
-        total_unspent_outs = 0
-        unspent_outs.each{ |unspent| 
-          total_unspent_outs = total_unspent_outs + unspent.amount }
+        total_unspent_outs = total_of_unspent(unspent_outs)
         
         # The spend output
-        dest_addr_160 = Protocol::Network.address_to_hash160(coin, dest_addr)
-        outputs << Protocol::UTXOOutput.new(amount_satoshi.to_u64, 
-          dest_addr_160)
+        outputs << create_output(coin, amount_satoshi.to_u64, dest_addr)
           
         # Our fees
-        fee_addr_160 = Protocol::Network.address_to_hash160(coin, fee_addr)
-        outputs << Protocol::UTXOOutput.new(fee_satoshi.to_u64, fee_addr_160)
+        outputs << create_output(coin, fee_satoshi.to_u64, fee_addr)
         
         # The change
         change = total_unspent_outs - total_amount
@@ -36,11 +31,8 @@ module OnChain
         
           change_addr = Protocol::Network.pubhex_to_address(coin, 
             pub_hex_keys[0])
-          
-          change_addr_160 = 
-            Protocol::Network.address_to_hash160(coin, change_addr)
             
-          outputs << Protocol::UTXOOutput.new(change.to_u64, change_addr_160)
+          outputs << create_output(coin, change.to_u64, change_addr)
         end
       
         tx = Protocol::Transaction.create(coin, unspent_outs, outputs)
@@ -53,6 +45,27 @@ module OnChain
         return unspent_outs
       end
     
+    end
+    
+    # Create an out with amount and address
+    private def self.create_output(coin : CoinType,
+      amount_satoshi : UInt64, 
+      dest_addr : String)
+    
+      dest_addr_160 = Protocol::Network.address_to_hash160(coin, dest_addr)
+      return Protocol::UTXOOutput.new(amount_satoshi, dest_addr_160)
+        
+    end
+    
+    # How much total value are we sending
+    private def self.total_of_unspent(unspent_outs : Array(UnspentOut)) : UInt64
+    
+      total = 0.to_u64
+      
+      unspent_outs.each{ |unspent| total = total + unspent.amount }
+        
+      return total
+          
     end
     
     private def self.get_unspent_for_amount(
