@@ -2,12 +2,12 @@ module OnChain
   struct UnsignedTransaction
     
     getter txhex : String
-    getter total_input_value : Int64
+    getter total_input_value : BigInt
     getter hashes : Array(HashToSign)
     
     def initialize(
       @txhex : String,
-      @total_input_value : Int64,
+      @total_input_value : BigInt,
       @hashes : Array(HashToSign))
     end
     

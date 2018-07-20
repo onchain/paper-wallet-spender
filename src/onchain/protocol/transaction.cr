@@ -14,11 +14,14 @@ module OnChain
           hashes_to_sign = Array(HashToSign).new
           
           unspents.unspent_outs.each_with_index do |unspent, i|
-            blake_hash = zcash_tx.signature_hash_for_zcash(i.to_u64, unspent.amount)
-            hashes_to_sign << HashToSign.new(blake_hash, "", unspent.vout)
+            blake_hash = zcash_tx.signature_hash_for_zcash(
+              i.to_u64, unspent.amount)
+            hashes_to_sign << HashToSign.new(
+              blake_hash, unspents.pub_hex_keys[i], unspent.vout)
           end
           
-          return UnsignedTransaction.new(zcash_tx.to_hex, 0, hashes_to_sign)
+          return UnsignedTransaction.new(zcash_tx.to_hex, 
+            unspents.total_input_value, hashes_to_sign)
           
         else
           raise "Currency not supported"

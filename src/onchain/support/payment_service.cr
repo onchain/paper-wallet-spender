@@ -67,17 +67,27 @@ module OnChain
       case unspents
       when Array(UnspentOut)
         just_the_ones_we_need = Array(UnspentOut).new
+        public_keys = Array(String).new
         total = BigInt.new 
         
         unspents.each do |unspent|
           just_the_ones_we_need << unspent
           total = total + unspent.amount
+          
+          # Store the corresponding pubhex key.
+          pub_hex_keys.each do |key|
+            hash160 = Protocol::Network.pubhex_to_hash160 key
+            if "76a914#{hash160}88ac" == unspent.script_pub_key
+              public_keys << key
+            end
+          end
+          
           if total >= amount
-            return UnspentOuts.new(total, just_the_ones_we_need)
+            return UnspentOuts.new(total, just_the_ones_we_need, public_keys)
           end
         end
         
-        return UnspentOuts.new(total, just_the_ones_we_need)
+        return UnspentOuts.new(total, just_the_ones_we_need, public_keys)
         
       else
         # It failed so returnt he node status

@@ -33,6 +33,13 @@ describe OnChain::Protocol do
     case unsigned_tx
     when OnChain::UnsignedTransaction
       unsigned_tx.txhex.should eq(tx_hex)
+      
+      unsigned_tx.hashes.size.should eq(1)
+      
+      unsigned_tx.hashes[0].hash_to_sign.should eq(
+        "85fbf770ebe92c7ae5c4eb61eba5e03df1ff32cdaff75e34756613388f5ef85c")
+      
+      unsigned_tx.hashes[0].public_key.should eq(pub_keys_hex[0])
     else
       true.should eq false
     end

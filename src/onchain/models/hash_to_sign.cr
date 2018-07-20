@@ -1,5 +1,9 @@
 module OnChain
   struct HashToSign
+  
+    getter hash_to_sign
+    getter public_key 
+    getter input_index 
     
     def initialize(
       @hash_to_sign : String,

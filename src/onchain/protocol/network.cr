@@ -39,6 +39,20 @@ module OnChain
         
       end
   
+      def self.pubhex_to_hash160(pub_hex : String) : String
+      
+        data = OnChain.to_bytes(pub_hex)
+        hash = OpenSSL::Digest.new("SHA256")
+        hash.update(data)
+        hash1 = hash.digest
+        
+        hash = OpenSSL::Digest.new("RIPEMD160")
+        hash.update(hash1)
+        hash2 = hash.digest
+        
+        return OnChain.to_hex hash2
+      end
+  
       def self.pubhex_to_address(coin : OnChain::CoinType, 
         pub_hex : String) : String
       
