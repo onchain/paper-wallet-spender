@@ -4,14 +4,25 @@ module OnChain
     
       abstract def to_hex : String
       
-      def self.create(coin : CoinType, unspents : Array(UnspentOut),
-        outputs : Array(UTXOOutput))
+      def self.create(coin : CoinType, unspents : UnspentOuts,
+        outputs : Array(UTXOOutput)) : UnsignedTransaction
       
         tx = case coin
         when CoinType::ZCash
-          ZCashTransaction.new(unspents, outputs)
+        
+          zcash_tx = ZCashTransaction.new(unspents.unspent_outs, outputs)
+          hashes_to_sign = Array(HashToSign).new
+          
+          unspents.unspent_outs.each_with_index do |unspent, i|
+            blake_hash = zcash_tx.signature_hash_for_zcash(i.to_u64, unspent.amount)
+            hashes_to_sign << HashToSign.new(blake_hash, "", unspent.vout)
+          end
+          
+          return UnsignedTransaction.new(zcash_tx.to_hex, 0, hashes_to_sign)
+          
         else
           raise "Currency not supported"
+          
         end
         
         return tx

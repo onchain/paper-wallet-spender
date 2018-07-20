@@ -58,7 +58,7 @@ describe OnChain::Protocol do
     
     tx.join_split_size.should eq(0)
     
-    the_hash = OnChain.to_hex tx.signature_hash_for_zcash(0, 0, false)
+    the_hash = tx.signature_hash_for_zcash(0, BigInt.new(0), false)
       
     the_hash.should eq(
       "5f0957950939a65c5a76128eaf552ca8e86066387325bd831f3cd32962ce1a65")
@@ -99,7 +99,7 @@ describe OnChain::Protocol do
     OnChain.to_hex(tx.zcash_prev_outs_hash).should eq(
       "92b8af1f7e12cb8de105af154470a2ae0a11e64a24a514a562ff943ca0f35d7f")
     
-    the_hash = OnChain.to_hex tx.signature_hash_for_zcash(1, 365293780370497)
+    the_hash = tx.signature_hash_for_zcash(1, BigInt.new(365293780370497))
     
     # Not sure if this is right. Need to find another test case.
     the_hash.should eq(

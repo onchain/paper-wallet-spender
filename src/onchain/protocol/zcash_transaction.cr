@@ -42,8 +42,8 @@ module OnChain
       # Implementation of ZIP143
       # https://github.com/zcash/zips/blob/master/zip-0143.rst
       
-      def signature_hash_for_zcash(input_idx : UInt64, prev_out_value : UInt64,
-        input = true)
+      def signature_hash_for_zcash(input_idx : UInt64, prev_out_value : BigInt,
+        input = true) : String
         
         buffer = IO::Memory.new
         
@@ -89,14 +89,15 @@ module OnChain
           buffer.write(inputs[input_idx].script_sig)
           
           # 10c. value
-          buffer.write_bytes(prev_out_value, IO::ByteFormat::LittleEndian)
+          buffer.write_bytes(prev_out_value.to_u64, IO::ByteFormat::LittleEndian)
           
           # 10d. nSequence
           buffer.write_bytes(inputs[input_idx].sequence, 
             IO::ByteFormat::LittleEndian)
         end
           
-        return blake2b_buffer(buffer, ZCASH_SIG_HASH_PERSONALIZATION)
+        return OnChain.to_hex blake2b_buffer(buffer, 
+          ZCASH_SIG_HASH_PERSONALIZATION)
       end
     
       def to_hex : String
