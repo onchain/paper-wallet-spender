@@ -55,6 +55,22 @@ module OnChain
           
     end
     
+    def parse_answer(answer : String) : String
+    
+      json = JSON.parse answer
+      
+      if json["error"]? != nil
+        return json["error"].as_s
+      end
+      
+      if json["tx"]? != nil && json["tx"]["hash"]? != nil
+        return json["tx"]["hash"].as_s
+      end
+      
+      return "Unable to parse result"
+    
+    end
+    
     private def post_eth_request(coin, path : String, tx_hex : String)
     
       # At the moment just get the first provider. Later we can failover.
@@ -65,7 +81,10 @@ module OnChain
       puts msg
     
       response = HTTP::Client.post url + path, body: msg
-      return NodeStatus.new response.status_code, response.body
+      
+      parsed_response = parse_answer(response.body)
+      
+      return NodeStatus.new response.status_code, parsed_response
     end
     
     private def make_request(path : String)
