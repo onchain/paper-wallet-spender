@@ -67,7 +67,7 @@ module OnChain
         return json["tx"]["hash"].as_s
       end
       
-      return "Unable to parse result"
+      return answer
     
     end
     
