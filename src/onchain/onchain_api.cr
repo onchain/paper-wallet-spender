@@ -152,28 +152,11 @@ module OnChain
   # TODO - Find an alternative.
   def self.blake2b(data, person)
   
-    python_script = (<<-PYTHON
-    import hashlib
-    import sys
-    
-    personal = sys.argv[2]
-      
-    if personal == 'ZcashSigHash':
-      personal = b"ZcashSigHash\\x19\\x1b\\xa8\\x5b"
-    else:
-      personal = personal.encode()
-    
-    h = hashlib.blake2b(person = personal, digest_size=32)
-    h.update(bytearray.fromhex(sys.argv[1]))
-    print(h.hexdigest())
-    PYTHON
-    )
-  
-    tempfile = Tempfile.open("blake2b", ".py") do |file|
-      file.print(python_script)
+    if person == "ZcashSigHash"
+      person = "ZcashSigHash\\\\x19\\\\x1b\\\\xa8\\\\x5b"
     end
-    
-    cmd = "python3 #{tempfile.path} '#{data}' '#{person}'"
+  
+    cmd = "python3 -c \"import hashlib, sys; h = hashlib.blake2b(person = b\\\"#{person}\\\", digest_size=32); h.update(bytearray.fromhex(\\\"#{data}\\\")); print(h.hexdigest())\""   
     return `#{cmd}`.strip
   end
 end
