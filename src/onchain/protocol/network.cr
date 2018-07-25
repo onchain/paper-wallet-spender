@@ -5,28 +5,45 @@ module OnChain
     
       NETWORKS = {
         OnChain::CoinType::Bitcoin => {
-         :pubKeyHash => "00"
+         :pubKeyHash => "00",
+          :p2sh_version => "05"
         },
         OnChain::CoinType::Testnet3 => {
-          :pubKeyHash => "6f"
+          :pubKeyHash => "6f",
+          :p2sh_version => "c4"
         },
         OnChain::CoinType::Bitcoin_Cash => {
-          :pubKeyHash => "00"
+          :pubKeyHash => "00",
+          :p2sh_version => "05"
         },
         OnChain::CoinType::Bitcoin_Gold => {
-          :pubKeyHash => "26"
+          :pubKeyHash => "26",
+          :p2sh_version => "17",
+          :fork_id => "79"
         } ,
         OnChain::CoinType::Litecoin => {
-          :pubKeyHash => "30"
+          :pubKeyHash => "30",
+          :p2sh_version => "32"
         },
         OnChain::CoinType::Dash => {
-          :pubKeyHash => "4C"
+          :pubKeyHash => "4C",
+          :p2sh_version => "10"
+        },
+        OnChain::CoinType::Doge => {
+          :pubKeyHash => "1E",
+          :p2sh_version => "16"
         },
         OnChain::CoinType::Bitcoin_Private => {
-          :pubKeyHash => "1325"
+          :pubKeyHash => "1325",
+          :p2sh_version => "13AF"
         },
         OnChain::CoinType::ZCash => {
-          :pubKeyHash => "1CB8"
+          :pubKeyHash => "1CB8",
+          :p2sh_version => "1CBD"
+        },
+        OnChain::CoinType::ZClassic => {
+          :pubKeyHash => "1CB8",
+          :p2sh_version => "1CBD"
         }
       }
       
@@ -70,8 +87,13 @@ module OnChain
         io.write(hash2)
         with_version_byte = io.to_slice
         
+        return encode_with_checksum(with_version_byte)
+      end
+        
+      def self.encode_with_checksum(buffer : Bytes) : String
+        
         hash = OpenSSL::Digest.new("SHA256")
-        hash.update(with_version_byte)
+        hash.update(buffer)
         hash3 = hash.digest
         
         hash = OpenSSL::Digest.new("SHA256")
@@ -79,7 +101,7 @@ module OnChain
         hash4 = hash.digest
         
         io = IO::Memory.new
-        io.write with_version_byte
+        io.write buffer
         io.write hash4[0, 4].to_slice
         with_checksum = io.to_slice
         

@@ -9,11 +9,27 @@ module OnChain
       end
       
       def to_address(coin : CoinType)
+      
         buffer = IO::Memory.new
-        
         to_buffer(buffer)
         
-        puts OnChain.to_hex(buffer)
+        hash = OpenSSL::Digest.new("SHA256")
+        hash.update(buffer.to_slice)
+        hash1 = hash.digest
+        
+        # has160 the buffer
+        hash = OpenSSL::Digest.new("RIPEMD160")
+        hash.update(hash1)
+        hash2 = hash.digest
+        
+        io = IO::Memory.new
+        io.write OnChain.to_bytes(
+          OnChain::Protocol::Network::NETWORKS[coin][:p2sh_version])
+        io.write(hash2)
+        with_version_byte = io.to_slice
+        
+        return OnChain::Protocol::Network.encode_with_checksum(
+          with_version_byte)
       end
       
       def to_buffer(buffer : IO::Memory)

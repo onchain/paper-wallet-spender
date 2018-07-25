@@ -15,6 +15,7 @@ module OnChain
     Bitcoin_Gold
     Litecoin
     Dash
+    Doge
     Bitcoin_Private
     ZCash
     ZCashTestnet

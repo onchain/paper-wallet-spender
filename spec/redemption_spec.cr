@@ -21,5 +21,8 @@ describe OnChain do
     ).gsub(/\s+/, "") 
     
     rs_hex.should eq(redemption_script)
+    
+    rs.to_address(OnChain::CoinType::Bitcoin).should eq(
+      "34rNLSmvXiHqQAGJfAeGF7bxoYj8KYfLvU")
   end
 end
