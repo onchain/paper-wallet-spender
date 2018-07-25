@@ -3,13 +3,13 @@ require "./spec_helper"
 describe OnChain::BlockchaininfoProvider do
 
   it "should get a balance" do
-  
+
     provider = OnChain::BlockchaininfoProvider.new(
       OnChain::CoinMarketCapRateProvider.new)
-      
+
     balance = provider.get_balance(OnChain::CoinType::Bitcoin,
       "16KBLs5NVpUcrhmcC7eifHuSJjKLufApak")
-      
+
     case balance
     when OnChain::Balance
       balance.balance.should eq(16020000)
@@ -17,13 +17,13 @@ describe OnChain::BlockchaininfoProvider do
       true.should eq(false)
     end
   end
-  
+
   it "should parse unspent outs json" do
     unspent_outs_json = (<<-UNSPENT
     {
     "notice" :"This wallet contains a very large number of unspent outputs. Please consolidate some outputs",
     "unspent_outputs":[
-    
+
         {
             "tx_hash":"a9d0880dce1db63524f043786785ac30b26f21932c6d45ba75be08871
             c380929",
@@ -36,7 +36,7 @@ describe OnChain::BlockchaininfoProvider do
             "value_hex": "05e2f4",
             "confirmations":11884
         },
-      
+
         {
             "tx_hash":"75ada4f753a1a5c37c53227e2139d0c2d4172b6b5ab656830689df0c7
             4c864fd",
@@ -53,22 +53,22 @@ describe OnChain::BlockchaininfoProvider do
     }
     UNSPENT
     ).gsub(/\s+/, "")
-    
+
     json = JSON.parse(unspent_outs_json)
-    
+
     utxo = [] of OnChain::UnspentOut
     json["unspent_outputs"].as_a.each do |j|
       utxo << OnChain::UnspentOut.from_blockinfo_json(j)
     end
-    
+
     utxo.size.should eq(2)
-    
+
     utxo[0].txid.should eq(
       "2909381c8708be75ba456d2c93216fb230ac85677843f02435b61dce0d88d0a9")
   end
 
   it "should parse blockinfo history json" do
-  
+
     history_json = (<<-HISTORY
     {"recommend_include_fee":true,"info":{"nconnected":0,"conversion":100000000.
     00000000,"symbol_local":{"code":"USD","symbol":"$","name":"U.S. dollar","con
@@ -129,27 +129,27 @@ describe OnChain::BlockchaininfoProvider do
     pe":0,"addr":"16KBLs5NVpUcrhmcC7eifHuSJjKLufApak"}]}]}
     HISTORY
     ).gsub(/\s+/, "")
-    
+
     addresses = ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak"]
-    
+
     json = JSON.parse(history_json)
     history =  OnChain::History.from_blockinfo_json(json, addresses)
-    
+
     history.total_txs.should eq(3)
-    
+
     history.txs[0].address.should eq("17iESYBf7CQMxCxdabiMfjZRDniGDZkyX3")
     history.txs[1].address.should eq("36owNcemLHrqW6XXFWyXeedQoErSBWTQFE")
     history.txs[2].address.should eq("16KBLs5NVpUcrhmcC7eifHuSJjKLufApak")
   end
 
   it "should get a history" do
-  
+
     provider = OnChain::BlockchaininfoProvider.new(
       OnChain::CoinMarketCapRateProvider.new)
-      
+
     history = provider.address_history(OnChain::CoinType::Bitcoin,
       ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak"])
-      
+
     case history
     when OnChain::History
       history.total_txs.should eq(3)
@@ -158,5 +158,28 @@ describe OnChain::BlockchaininfoProvider do
       true.should eq(false)
     end
   end
-  
+
+  it "should get all balances" do
+
+    provider = OnChain::BlockchaininfoProvider.new(
+      OnChain::CoinMarketCapRateProvider.new)
+
+    all_balances = provider.get_all_balances(OnChain::CoinType::Bitcoin,
+      ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak", "1Nh7uHdvY6fNwtQtM1G5EZAFPLC33B59rB", "1MA2uGiKhGBXXjv2tGPQrtsqLcLEA7v3hH"])
+
+  end
+
+  # it "should push tx to blockchain" do
+  #
+  #   provider = OnChain::BlockchaininfoProvider.new(
+  #     OnChain::CoinMarketCapRateProvider.new)
+  #
+  #   push_tx = provider.push_tx(OnChain::CoinType::Bitcoin,
+  #     "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff320
+  #     3a3640707062f503253482f13000000416e746d696e65723a205468697320697320446f74424720626c6f6
+  #     36b0001000000ffffffff019fc1924a000000001976a914c35786aca39bf1ee14c6b923bcc2a6991a22d6b188ac00000000")
+  #
+  # end
+
+
 end
