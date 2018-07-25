@@ -70,10 +70,6 @@ module OnChain
 
     end
 
-    def push_tx(coin : CoinType, tx_hex : String)
-      return post_request(coin, "/tx/send", tx_hex)
-    end
-
     def get_all_balances(coin : CoinType, addresses : Array(String), set_rate = true)
 
       pipe_addresses = addresses.join("|")
@@ -104,12 +100,15 @@ module OnChain
 
     end
 
+    def push_tx(coin : CoinType, tx_hex : String)
+      return post_request(coin, "pushtx", tx_hex)
+    end
 
     private def post_request(coin, path : String, data : String,
-      form_param = "rawtx")
+       form_param = "tx")
 
-      response = HTTP::Client.post @url + path, form: "rawtx=#{data}"
-      return NodeStatus.new response.status_code, response.body
+       response = HTTP::Client.post @url + path, form: "tx=#{data}"
+       return NodeStatus.new response.status_code, response.body
     end
 
   end
