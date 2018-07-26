@@ -32,6 +32,15 @@ module OnChain
           with_version_byte)
       end
       
+      def to_hex
+      
+        buffer = IO::Memory.new
+        
+        to_buffer(buffer)
+        
+        return OnChain.to_hex(buffer.to_slice)
+      end
+      
       def to_buffer(buffer : IO::Memory)
       
         buffer.write_bytes(min_signers + 80)

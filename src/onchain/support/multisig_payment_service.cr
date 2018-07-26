@@ -65,16 +65,18 @@ module OnChain
         total = BigInt.new 
         
         unspents.each do |unspent|
+        
           just_the_ones_we_need << unspent
           total = total + unspent.amount
           
           # Store the corresponding redemption script.
-          #redemption_scripts.each do |rs|
-          #  hash160 = Protocol::Network.pubhex_to_hash160 key
-          #  if "76a914#{hash160}88ac" == unspent.script_pub_key
-          #    scripts << rs
-          #  end
-          #end
+          redemption_scripts.each do |rs|
+            hash160 = Protocol::Network.pubhex_to_hash160 rs.to_hex
+            puts hash160
+            if "a914#{hash160}87" == unspent.script_pub_key
+              scripts << rs
+            end
+          end
           
           if total >= amount
             return UnspentOuts.new(total, just_the_ones_we_need, scripts)

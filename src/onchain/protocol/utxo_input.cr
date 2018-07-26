@@ -7,6 +7,17 @@ module OnChain
       property script_sig : Bytes
       property sequence : UInt32
 
+      # For multi sig transactions we serialize the redemption script
+      # as part of the inputs
+      def initialize(unspent : UnspentOut, redemption_script : RedemptionScript)
+        @prev_out_hash = OnChain.to_bytes(unspent.txid).reverse!
+        @prev_out_index = unspent.vout.to_u32
+        @script_sig = OnChain.to_bytes(redemption_script.to_hex)
+        @script_sig_length = @script_sig.size.to_u64
+        @sequence = 0xffffffff.to_u32
+      end
+
+      # Create a normal transaction input
       def initialize(unspent : UnspentOut)
         @prev_out_hash = OnChain.to_bytes(unspent.txid).reverse!
         @prev_out_index = unspent.vout.to_u32

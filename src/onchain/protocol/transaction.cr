@@ -25,7 +25,13 @@ module OnChain
           
         else
         
-          utxo_tx = UTXOTransaction.new(unspents.unspent_outs, outputs)
+          # Create a muylti sig or normal transaction?
+          utxo_tx = if unspents.redemption_scripts.size == 0 
+            UTXOTransaction.new(unspents.unspent_outs, outputs)
+          else
+            UTXOTransaction.new(unspents.unspent_outs, outputs, 
+              unspents.redemption_scripts)
+          end
           
           hashes_to_sign = Array(HashToSign).new
           

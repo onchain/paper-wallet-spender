@@ -7,11 +7,23 @@ module OnChain
       property outputs : Array(UTXOOutput)
       property lock_time : UInt32
       
-      def initialize(unspents : Array(UnspentOut), outputs : Array(UTXOOutput))
+      # Used for multi sig transactions
+      def initialize(unspents : Array(UnspentOut), @outputs : Array(UTXOOutput),
+        redemption_scripts : Array(RedemptionScript))
       
         @ver, @lock_time = 1.to_u32, 0.to_u32
         @inputs = Array(UTXOInput).new
-        @outputs = outputs
+        
+        unspents.each_with_index do |unspent, i| 
+          @inputs << UTXOInput.new(unspent, redemption_scripts[i])
+        end
+        
+      end
+      
+      def initialize(unspents : Array(UnspentOut), @outputs : Array(UTXOOutput))
+      
+        @ver, @lock_time = 1.to_u32, 0.to_u32
+        @inputs = Array(UTXOInput).new
         
         unspents.each do |unspent| 
           @inputs << UTXOInput.new(unspent)
@@ -29,6 +41,7 @@ module OnChain
         @inputs = parse_inputs(buffer)
         @outputs = parse_outputs(buffer)
         @lock_time = readUInt32(buffer)
+        
         
       end
     
@@ -81,11 +94,9 @@ module OnChain
         # 1. Version
         buffer.write_bytes(ver, IO::ByteFormat::LittleEndian)
 
-        # 2. Inputs
+        # 2. Input
         Transaction.write_var_int(buffer, inputs.size.to_u64)
-        inputs.each do |input|
-          input.to_buffer(buffer)
-        end
+        input[input_idx].to_buffer(buffer)
 
         # 3. Outputs
         Transaction.write_var_int(buffer, outputs.size.to_u64)
@@ -107,7 +118,7 @@ module OnChain
         hash.update(hash1)
         hash2 = hash.digest
 
-        return OnmChain.to_hex(hash2)
+        return OnChain.to_hex(hash2)
       end
       
     end
