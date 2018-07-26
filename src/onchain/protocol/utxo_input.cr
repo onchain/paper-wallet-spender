@@ -36,41 +36,6 @@ module OnChain
         buffer.write(script_sig)
         buffer.write_bytes(sequence, IO::ByteFormat::LittleEndian)
       end
-
-      def hash_signature_for_input(input_idx : Int32) : String
-        buffer = IO::Memory.new
-
-        # 1. Version
-        buffer.write_bytes(ver, IO::ByteFormat::LittleEndian)
-
-        # 2. Inputs
-        Transaction.write_var_int(buffer, inputs.size.to_u64)
-        inputs.each do |input|
-          input.to_buffer(buffer)
-        end
-
-        # 3. Outputs
-        Transaction.write_var_int(buffer, outputs.size.to_u64)
-        outputs.each do |output|
-          output.to_buffer(buffer)
-        end
-
-        # 4. Lock time
-        buffer.write_bytes(lock_time, IO::ByteFormat::LittleEndian)
-
-        # 5. Hash type = 1 for
-        buffer.write_bytes(1.to_u32, IO::ByteFormat::LittleEndian)
-
-        hash = OpenSSL::Digest.new("SHA256")
-        hash.update(buffer.to_slice)
-        hash1 = hash.digest
-
-        hash = OpenSSL::Digest.new("SHA256")
-        hash.update(hash1)
-        hash2 = hash.digest
-
-        return OnmChain.to_hex(hash2)
-      end
     end
   end
 end

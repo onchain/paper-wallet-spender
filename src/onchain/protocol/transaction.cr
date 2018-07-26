@@ -24,8 +24,13 @@ module OnChain
             unspents.total_input_value, hashes_to_sign)
           
         else
-          raise "Currency not supported"
+        
+          utxo_tx = UTXOTransaction.new(unspents.unspent_outs, outputs)
           
+          hashes_to_sign = Array(HashToSign).new
+          
+          return UnsignedTransaction.new(utxo_tx.to_hex, 
+            unspents.total_input_value, hashes_to_sign)
         end
         
         return tx
