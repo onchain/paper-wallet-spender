@@ -4,6 +4,8 @@ describe OnChain::Protocol do
 
   it "should parse and re-generate multi sig transaction" do
   
+    OnChain::PROVIDERS[OnChain::CoinType::Bitcoin] = BitcoinTestProvider.new
+  
     pub_keys_hex = 
       ["02fd89e243d38f4e24237eaac4cd3a6873ce45aa4036ec0c7b79a4d4ac0fefebc4",
       "0396e42d3c584da0300ee44dcbaee0eccaa0e6ae2264fdd2554af6d2953f95bf99"]
@@ -49,4 +51,29 @@ describe OnChain::Protocol do
   
   end
   
+end
+
+# We supply the unspent outs so that we don't contatc the internet
+class BitcoinTestProvider < OnChain::UTXOProvider
+
+  def address_history(coin : CoinType, addresses : Array(String))
+    return NodeStatus.new 500, "Error retrieving history"
+  end
+  
+  def push_tx(coin : CoinType, tx : String)
+    return NodeStatus.new 500, "Error retrieving history"
+  end
+  
+  def get_unspent_outs(coin : OnChain::CoinType, addresses : Array(String))
+  
+    utxo = [] of OnChain::UnspentOut
+    utxo << OnChain::UnspentOut.new(
+      "9fd77c01b4f81f142e7e066eb9abeb4952ec5fdea51036acbb22b5ffeb57fd5f",
+      BigInt.new(1366),
+      1, 
+      "a91422ad290099b84bde8e6f00a8a87fffdbbddddc2b87")
+    return utxo
+    
+  end
+    
 end
