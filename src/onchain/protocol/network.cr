@@ -26,35 +26,26 @@ module OnChain
           :p2sh_version => "32"
         },
         OnChain::CoinType::Dash => {
-          :pubKeyHash => "4C",
+          :pubKeyHash => "4c",
           :p2sh_version => "10"
         },
         OnChain::CoinType::Doge => {
-          :pubKeyHash => "1E",
+          :pubKeyHash => "1e",
           :p2sh_version => "16"
         },
         OnChain::CoinType::Bitcoin_Private => {
           :pubKeyHash => "1325",
-          :p2sh_version => "13AF"
+          :p2sh_version => "13af"
         },
         OnChain::CoinType::ZCash => {
-          :pubKeyHash => "1CB8",
-          :p2sh_version => "1CBD"
+          :pubKeyHash => "1cb8",
+          :p2sh_version => "1cbd"
         },
         OnChain::CoinType::ZClassic => {
-          :pubKeyHash => "1CB8",
-          :p2sh_version => "1CBD"
+          :pubKeyHash => "1cb8",
+          :p2sh_version => "1cbd"
         }
       }
-      
-      def self.address_to_hash160(coin : OnChain::CoinType, 
-        network_address : String) : String
-        
-        chars_to_miss = OnChain.to_bytes(NETWORKS[coin][:pubKeyHash]).size * 2
-        
-        return decode58(network_address).to_s(16)[chars_to_miss..-9]
-        
-      end
   
       def self.pubhex_to_hash160(pub_hex : String) : String
       

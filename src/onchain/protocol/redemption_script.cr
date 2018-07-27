@@ -8,7 +8,7 @@ module OnChain
       def initialize(@min_signers : UInt8, @public_keys : Array(String))
       end
       
-      def to_address(coin : CoinType)
+      def to_address(coin : CoinType) : Address
       
         buffer = IO::Memory.new
         to_buffer(buffer)
@@ -22,14 +22,7 @@ module OnChain
         hash.update(hash1)
         hash2 = hash.digest
         
-        io = IO::Memory.new
-        io.write OnChain.to_bytes(
-          OnChain::Protocol::Network::NETWORKS[coin][:p2sh_version])
-        io.write(hash2)
-        with_version_byte = io.to_slice
-        
-        return OnChain::Protocol::Network.encode_with_checksum(
-          with_version_byte)
+        return Address.new(coin, hash2, true)
       end
       
       def to_hex

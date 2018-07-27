@@ -7,11 +7,14 @@ describe OnChain::Protocol do
     OnChain::PROVIDERS[OnChain::CoinType::ZCash] = ZCashTestProvider.new
   
     pub_keys_hex = 
-      ["028f883177988f212f2f1b89bc0aa1fb0683899c3665b62167b0daa998018f85d7"]
+      [OnChain::Protocol::PublicKey.new(
+        "028f883177988f212f2f1b89bc0aa1fb0683899c3665b62167b0daa998018f85d7")]
       
-    dest_addr = "t1coURaGEsTgaG6Jp8Y2rA2sUppakecfJKC"
+    dest_addr = OnChain::Protocol::Address.new(OnChain::CoinType::ZCash,
+      "t1coURaGEsTgaG6Jp8Y2rA2sUppakecfJKC")
     
-    fee_addr = "t1aZLWNcFHR3apVoMuAPzEjGbdbR2qGfcAw"
+    fee_addr = OnChain::Protocol::Address.new(OnChain::CoinType::ZCash,
+      "t1aZLWNcFHR3apVoMuAPzEjGbdbR2qGfcAw")
   
     unsigned_tx = OnChain::PaymentService.create(
       OnChain::CoinType::ZCash, 
@@ -42,7 +45,7 @@ describe OnChain::Protocol do
       unsigned_tx.hashes[0].hash_to_sign.should eq(
         "11c4776527c1f3e3f02d032c08a360fce1f572a8479bcc98859fa86e75858ca0")
       
-      unsigned_tx.hashes[0].public_key.should eq(pub_keys_hex[0])
+      unsigned_tx.hashes[0].public_key.should eq(pub_keys_hex[0].pub_key_hex)
     else
       true.should eq false
     end

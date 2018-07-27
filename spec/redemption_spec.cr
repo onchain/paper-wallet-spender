@@ -22,7 +22,7 @@ describe OnChain do
     
     rs_hex.should eq(redemption_script)
     
-    rs.to_address(OnChain::CoinType::Bitcoin).should eq(
+    rs.to_address(OnChain::CoinType::Bitcoin).to_s.should eq(
       "34rNLSmvXiHqQAGJfAeGF7bxoYj8KYfLvU")
   end
 end

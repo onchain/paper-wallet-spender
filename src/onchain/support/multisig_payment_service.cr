@@ -4,11 +4,11 @@ module OnChain
   
     def self.create_multi_sig(coin : CoinType, 
       redemption_scripts : Array(Protocol::RedemptionScript),
-      dest_addr : String, 
+      dest_addr : Protocol::Address, 
       amount_satoshi : BigInt, 
       miners_fee : UInt64 = 40000,
       fee_satoshi : BigInt = BigInt.new(0), 
-      fee_addr : String = "") : UnsignedTransaction | NodeStatus
+      fee_addr : Protocol::Address? = nil) : UnsignedTransaction | NodeStatus
     
       total_amount = amount_satoshi + fee_satoshi + miners_fee
       
@@ -24,7 +24,7 @@ module OnChain
         outputs << create_output(coin, amount_satoshi.to_u64, dest_addr)
           
         # Our fees
-        if fee_satoshi > DUST_SATOSHIES
+        if fee_addr && fee_satoshi > DUST_SATOSHIES
           outputs << create_output(coin, fee_satoshi.to_u64, fee_addr)
         end
         
@@ -53,7 +53,7 @@ module OnChain
       
       # Convert the public keys to network addresses
       keys = redemption_scripts.map{ |rs| 
-        rs.to_address(coin)
+        rs.to_address(coin).to_s
       }
       
       unspents = PROVIDERS[coin].get_unspent_outs(coin, keys)
@@ -72,7 +72,6 @@ module OnChain
           # Store the corresponding redemption script.
           redemption_scripts.each do |rs|
             hash160 = Protocol::Network.pubhex_to_hash160 rs.to_hex
-            puts hash160
             if "a914#{hash160}87" == unspent.script_pub_key
               scripts << rs
             end

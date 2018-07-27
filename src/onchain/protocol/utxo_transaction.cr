@@ -42,7 +42,6 @@ module OnChain
         @outputs = parse_outputs(buffer)
         @lock_time = readUInt32(buffer)
         
-        
       end
     
       def to_hex : String

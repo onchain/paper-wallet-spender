@@ -4,11 +4,13 @@ module OnChain
 
   class PaymentService
   
-    def self.create(coin : CoinType, pub_hex_keys : Array(String),
-      dest_addr : String, amount_satoshi : BigInt, 
+    def self.create(coin : CoinType, 
+      pub_hex_keys : Array(Protocol::PublicKey),
+      dest_addr : Protocol::Address, 
+      amount_satoshi : BigInt, 
       miners_fee : UInt64 = 40000,
-      fee_satoshi : BigInt = 0, fee_addr : String = Nil
-      ) : UnsignedTransaction | NodeStatus
+      fee_satoshi : BigInt = 0, 
+      fee_addr : Protocol::Address = Nil) : UnsignedTransaction | NodeStatus
     
       total_amount = amount_satoshi + fee_satoshi + miners_fee
       
@@ -31,8 +33,8 @@ module OnChain
         change = unspent_outs.total_input_value - total_amount
         if change > DUST_SATOSHIES
         
-          change_addr = Protocol::Network.pubhex_to_address(coin, 
-            pub_hex_keys[0])
+          change_addr = Protocol::Address.new(
+            coin, pub_hex_keys[0].to_hash160, false)
             
           outputs << create_output(coin, change.to_u64, change_addr)
         end
@@ -49,21 +51,20 @@ module OnChain
     # Create an out with amount and address
     private def self.create_output(coin : CoinType,
       amount_satoshi : UInt64, 
-      dest_addr : String) : Protocol::UTXOOutput
+      dest_addr : Protocol::Address) : Protocol::UTXOOutput
     
-      dest_addr_160 = Protocol::Network.address_to_hash160(coin, dest_addr)
-      return Protocol::UTXOOutput.new(amount_satoshi, dest_addr_160)
+      return Protocol::UTXOOutput.new(amount_satoshi, dest_addr)
         
     end
     
     private def self.get_unspent_for_amount(
       coin : CoinType, 
-      pub_hex_keys : Array(String), 
+      pub_keys : Array(Protocol::PublicKey), 
       amount : BigInt) : UnspentOuts | NodeStatus
       
       # Convert the public keys to network addresses
-      keys = pub_hex_keys.map{ |key| 
-        Protocol::Network.pubhex_to_address(coin, key)
+      keys = pub_keys.map{ |key| 
+        key.to_address(coin, false).to_s
       }
       
       unspents = PROVIDERS[coin].get_unspent_outs(coin, keys)
@@ -79,10 +80,10 @@ module OnChain
           total = total + unspent.amount
           
           # Store the corresponding pubhex key.
-          pub_hex_keys.each do |key|
-            hash160 = Protocol::Network.pubhex_to_hash160 key
+          pub_keys.each do |key|
+            hash160 = key.to_hash160_hex
             if "76a914#{hash160}88ac" == unspent.script_pub_key
-              public_keys << key
+              public_keys << key.pub_key_hex
             end
           end
           

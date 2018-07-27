@@ -27,12 +27,4 @@ describe OnChain do
      
     address.should eq("t1PBnMCVWU9GDTLpW8YTqo71MZPWRkmKidQ")
   end
-
-  it "turn an address into a hash160" do
-  
-    address = OnChain::Protocol::Network.address_to_hash160(
-      OnChain::CoinType::ZCash, "t1PBnMCVWU9GDTLpW8YTqo71MZPWRkmKidQ")
-     
-    address.should eq("3a48bfebcdc52c7b3831eab75a1955e58744c7e3")
-  end
 end

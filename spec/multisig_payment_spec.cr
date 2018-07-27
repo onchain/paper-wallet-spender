@@ -12,7 +12,8 @@ describe OnChain::Protocol do
       
     rs = OnChain::Protocol::RedemptionScript.new(2, pub_keys_hex)
       
-    dest_addr = "16KBLs5NVpUcrhmcC7eifHuSJjKLufApak"
+    dest_addr = OnChain::Protocol::Address.new(OnChain::CoinType::Bitcoin, 
+      "16KBLs5NVpUcrhmcC7eifHuSJjKLufApak")
   
     unsigned_tx = OnChain::PaymentService.create_multi_sig(
       OnChain::CoinType::Bitcoin, 
@@ -69,7 +70,7 @@ class BitcoinTestProvider < OnChain::UTXOProvider
     utxo = [] of OnChain::UnspentOut
     utxo << OnChain::UnspentOut.new(
       "9fd77c01b4f81f142e7e066eb9abeb4952ec5fdea51036acbb22b5ffeb57fd5f",
-      BigInt.new(1366),
+      BigInt.new(1111366),
       1, 
       "a91422ad290099b84bde8e6f00a8a87fffdbbddddc2b87")
     return utxo
