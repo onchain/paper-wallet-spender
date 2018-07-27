@@ -60,7 +60,6 @@ describe OnChain::BlockchaininfoProvider do
     json["unspent_outputs"].as_a.each do |j|
       utxo << OnChain::UnspentOut.from_blockinfo_json(j)
     end
-
     utxo.size.should eq(2)
 
     utxo[0].txid.should eq(
@@ -134,7 +133,6 @@ describe OnChain::BlockchaininfoProvider do
 
     json = JSON.parse(history_json)
     history =  OnChain::History.from_blockinfo_json(json, addresses)
-
     history.total_txs.should eq(3)
 
     history.txs[0].address.should eq("17iESYBf7CQMxCxdabiMfjZRDniGDZkyX3")
@@ -154,7 +152,6 @@ describe OnChain::BlockchaininfoProvider do
     when OnChain::History
       history.total_txs.should eq(3)
     else
-      puts history
       true.should eq(false)
     end
   end
@@ -169,17 +166,22 @@ describe OnChain::BlockchaininfoProvider do
 
   end
 
-  # it "should push tx to blockchain" do
-  #
-  #   provider = OnChain::BlockchaininfoProvider.new(
-  #     OnChain::CoinMarketCapRateProvider.new)
-  #
-  #   push_tx = provider.push_tx(OnChain::CoinType::Bitcoin,
-  #     "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff320
-  #     3a3640707062f503253482f13000000416e746d696e65723a205468697320697320446f74424720626c6f6
-  #     36b0001000000ffffffff019fc1924a000000001976a914c35786aca39bf1ee14c6b923bcc2a6991a22d6b188ac00000000")
-  #
-  # end
+  it "should push tx to blockchain.info" do
 
+    provider = OnChain::BlockchaininfoProvider.new(
+      OnChain::CoinMarketCapRateProvider.new)
+
+    pushtx = provider.push_tx(OnChain::CoinType::Bitcoin,
+      "02000000000101d982cccbe6d8abd34dd1b3e818b1c7fd4dcaee1af45c5f686eb8b1c7
+      a09b220c01000000171600144bbb3b8c71d14c95ce271a45db10411c0c459f35feffffff
+      02a0252600000000001976a914fd945a6414d9a9744623474407aa45bb1fefe13688ac814
+      5b8350000000017a914230109bc9846a8944b638f655b83c34b536379a9870247304402205
+      ecd569edac2ceff066d03b32eee2e1ce0b4ef0e3c08347dd7e44fcec1503391022010ef430
+      2b8c00f00de3b3de3287d6f8ce8f34931ff582272a1e7cb0625c62f62012103aefffeb5fb1
+      4068be5e31c774195f4f7d4b4a8a5125aeebdf612697539225ee71a250800")
+
+      pushtx.@message.should eq("Transaction already exists")
+
+  end
 
 end

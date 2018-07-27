@@ -79,23 +79,26 @@ module OnChain
 
       case all_balances
       when String
-        json = JSON.parse(all_balances)
+        balance = [] of Balance
+        json = JSON.parse all_balances
 
         if json["addresses"]? != nil
-          each_balance = Array(Balance).new
           json["addresses"].as_a.each do |j|
+
             address = j["address"].as_s
             bal = j["final_balance"].as_i64
             hbal = bal / 1_00_000_000.0
             usd_balance = 0.0.to_f64
+
             if set_rate
               rate = @rate_provider.get_rate(coin)
               usd_balance = (hbal * rate).to_f64
             end
-            each_balance << OnChain::Balance.new BigInt.new(bal),  BigInt.new(bal), hbal, hbal, usd_balance, address
+
+            balance << OnChain::Balance.new BigInt.new(bal),  BigInt.new(bal), hbal, hbal, usd_balance, address
           end
         end
-        return each_balance
+        return balance
       end
       return NodeStatus.new all_balances, "Error retrieving addresses"
 
