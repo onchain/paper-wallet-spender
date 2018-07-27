@@ -156,13 +156,21 @@ describe OnChain::BlockchaininfoProvider do
     end
   end
 
-  it "should get all balances" do
+  it "should get all address balances" do
 
     provider = OnChain::BlockchaininfoProvider.new(
       OnChain::CoinMarketCapRateProvider.new)
 
-    all_balances = provider.get_all_balances(OnChain::CoinType::Bitcoin,
-      ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak", "1Nh7uHdvY6fNwtQtM1G5EZAFPLC33B59rB", "1MA2uGiKhGBXXjv2tGPQrtsqLcLEA7v3hH"])
+    balance = provider.get_all_balances(OnChain::CoinType::Bitcoin,
+      ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak",
+        "1Nh7uHdvY6fNwtQtM1G5EZAFPLC33B59rB",
+        "1MA2uGiKhGBXXjv2tGPQrtsqLcLEA7v3hH"])
+
+      address_balance = JSON.parse(balance.to_json)
+
+      address_balance[0]["human_balance"].should eq(176.50910979)
+      address_balance[1]["human_balance"].should eq(0.0)
+      address_balance[2]["human_balance"].should eq(0.1602)
 
   end
 

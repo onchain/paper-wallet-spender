@@ -79,7 +79,7 @@ module OnChain
 
       case all_balances
       when String
-        balance = [] of Balance
+        balance = [] of OnChain::Balance
         json = JSON.parse all_balances
 
         if json["addresses"]? != nil
@@ -95,7 +95,9 @@ module OnChain
               usd_balance = (hbal * rate).to_f64
             end
 
-            balance << OnChain::Balance.new BigInt.new(bal),  BigInt.new(bal), hbal, hbal, usd_balance, address
+            balance << OnChain::Balance.new(
+            BigInt.new(bal),  BigInt.new(bal),
+            hbal, hbal, usd_balance, address)
           end
         end
         return balance
