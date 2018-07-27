@@ -95,7 +95,7 @@ module OnChain
 
         # 2. Input
         Transaction.write_var_int(buffer, inputs.size.to_u64)
-        input[input_idx].to_buffer(buffer)
+        inputs[input_idx].to_buffer(buffer)
 
         # 3. Outputs
         Transaction.write_var_int(buffer, outputs.size.to_u64)

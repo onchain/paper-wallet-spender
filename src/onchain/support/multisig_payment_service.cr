@@ -71,8 +71,8 @@ module OnChain
           
           # Store the corresponding redemption script.
           redemption_scripts.each do |rs|
-            hash160 = Protocol::Network.pubhex_to_hash160 rs.to_hex
-            if "a914#{hash160}87" == unspent.script_pub_key
+            if OnChain.to_hex(rs.to_address(coin).output_script) == 
+              unspent.script_pub_key
               scripts << rs
             end
           end

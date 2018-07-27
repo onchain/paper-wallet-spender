@@ -35,6 +35,19 @@ module OnChain
           
           hashes_to_sign = Array(HashToSign).new
           
+          # For each unspent out we need the hash and a list
+          # of public keys that need to sign it.
+          unspents.unspent_outs.each_with_index do |unspent, i|
+          
+            bitcoin_hash = utxo_tx.hash_signature_for_input(i)
+            
+            unspents.redemption_scripts[i].public_keys.each do |pk|
+              hashes_to_sign << HashToSign.new( bitcoin_hash, pk, i)
+            end
+            
+          end
+          
+          
           return UnsignedTransaction.new(utxo_tx.to_hex, 
             unspents.total_input_value, hashes_to_sign)
         end
