@@ -58,8 +58,7 @@ module OnChain
         io.write_bytes("a9".to_i(16).to_u8) #  HASH160
         io.write_bytes("14".to_i(16).to_u8) #  length
         io.write(hash160)
-        io.write_bytes("88".to_i(16).to_u8) #  EQUALVERIFY
-        io.write_bytes("ac".to_i(16).to_u8) #  CHECKSIG
+        io.write_bytes("87".to_i(16).to_u8) #  OP_EQUAL
         return io.to_slice
       end
       
