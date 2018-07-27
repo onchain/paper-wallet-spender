@@ -45,6 +45,34 @@ module OnChain
         
         return encode_with_checksum(@coin, with_version_byte)
       end
+      
+      def output_script
+        if @p2sh
+          return p2sh
+        end
+        return p2pkh
+      end
+      
+      def p2sh : Bytes
+        io = IO::Memory.new
+        io.write_bytes("a9".to_i(16).to_u8) #  HASH160
+        io.write_bytes("14".to_i(16).to_u8) #  length
+        io.write(hash160)
+        io.write_bytes("88".to_i(16).to_u8) #  EQUALVERIFY
+        io.write_bytes("ac".to_i(16).to_u8) #  CHECKSIG
+        return io.to_slice
+      end
+      
+      def p2pkh : Bytes
+        io = IO::Memory.new
+        io.write_bytes("76".to_i(16).to_u8) #  DUP
+        io.write_bytes("a9".to_i(16).to_u8) #  HASH160
+        io.write_bytes("14".to_i(16).to_u8) #  length
+        io.write(hash160)
+        io.write_bytes("88".to_i(16).to_u8) #  EQUALVERIFY
+        io.write_bytes("ac".to_i(16).to_u8) #  CHECKSIG
+        return io.to_slice
+      end
         
       def encode_with_checksum(coin : OnChain::CoinType,
         buffer : Bytes) : String

@@ -43,19 +43,6 @@ module OnChain
         
       end
       
-      def self.create(coin : CoinType, hex : String)
-        
-        tx = case coin
-        when CoinType::ZCash
-          ZCashTransaction.new(hex)
-        else
-          raise "Currency not supported"
-        end
-        
-        return tx
-          
-      end
-      
       # Helpers for reading Bitcoin protocol messages
       
       def self.readUInt32(buffer : IO::Memory) : UInt32

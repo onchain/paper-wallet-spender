@@ -37,10 +37,10 @@ module OnChain
         
         buffer = IO::Memory.new(slice)
         
-        @ver = readUInt32(buffer)
+        @ver = Transaction.readUInt32(buffer)
         @inputs = parse_inputs(buffer)
         @outputs = parse_outputs(buffer)
-        @lock_time = readUInt32(buffer)
+        @lock_time = Transaction.readUInt32(buffer)
         
       end
     

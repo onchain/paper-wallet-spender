@@ -15,7 +15,7 @@ describe OnChain::Protocol do
     TX
     ).gsub(/\s+/, "")
   
-    tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
+    tx = OnChain::Protocol::ZCashTransaction.new(tx_hex)
   
     tx.class.should eq(OnChain::Protocol::ZCashTransaction)
     
@@ -46,7 +46,7 @@ describe OnChain::Protocol do
     TX
     ).gsub(/\s+/, "")
   
-    tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
+    tx = OnChain::Protocol::ZCashTransaction.new(tx_hex)
   
     tx.class.should eq(OnChain::Protocol::ZCashTransaction)
     
@@ -82,7 +82,7 @@ describe OnChain::Protocol do
     TX
     ).gsub(/\s+/, "")
   
-    tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
+    tx = OnChain::Protocol::ZCashTransaction.new(tx_hex)
   
     tx.class.should eq(OnChain::Protocol::ZCashTransaction)
     
@@ -121,9 +121,8 @@ describe OnChain::Protocol do
       00ffffffff0213eb07000000000001538046e20500000000026a657be3223f0000000000
     TX
     ).gsub(/\s+/, "")
-    #", "ac53536a526352", 1, 503068486, 1991772603, "a53bac078162046c80ddcc7feb6955e9ff6aa11bb2e3e9a15f48eebbabc8f871
     
-    tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
+    tx = OnChain::Protocol::ZCashTransaction.new(tx_hex)
   
     tx.class.should eq(OnChain::Protocol::ZCashTransaction)
     
@@ -152,7 +151,7 @@ describe OnChain::Protocol do
     TX
     ).gsub(/\s+/, "")
   
-    tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
+    tx = OnChain::Protocol::ZCashTransaction.new(tx_hex)
     
     tx.ver.should eq(2147483651)
     
@@ -177,7 +176,7 @@ describe OnChain::Protocol do
     TX
     ).gsub(/\s+/, "")
   
-    tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::ZCash, tx_hex)
+    tx = OnChain::Protocol::ZCashTransaction.new(tx_hex)
     
     tx.ver.should eq(2147483651)
     
