@@ -61,13 +61,20 @@ describe OnChain::Protocol do
         
       tx_to_sign.to_hex.should eq(unsigned_tx.txhex)
       
+      # OnChain.bin_to_hex(pk1.sign(OnChain.hex_to_bin(hash_to_sign)))
       sig1 = OnChain::Protocol::Signature.new(
         "02cc95dd4a29ccc38e46592602248e33ed56e8b3ea08d4d31f5688cbc52e85e203",
-        0, "")
+        0, 
+        "30450221009474dc743fd0f260e1ada66f13e2d24585ff9e533af6532ca828b9622c" +
+        "e6c3d5022071b3e846858e11d5a47e6e0352ff6affbf92543abbdd609e562fe7af3a" +
+        "e32c7e")
         
       sig2 = OnChain::Protocol::Signature.new(
         "03fd62b002c449b4d461a8582a5dc157ffc3fa99ec1d6df0ddb5800610fb3e66f2",
-        0, "")
+        0, 
+        "304402204c4abb075dad7c798ad7196dce2f1f2167a9b68e488b8e89496ff3b6253b" +
+        "4c7102207c7221098853c92c0ba80addcfa1e10db1654f2466f9df34a3693432ffc3" +
+        "4d91")
         
       tx_to_sign.sign([sig1, sig2])
       

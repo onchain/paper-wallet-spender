@@ -48,6 +48,7 @@ module OnChain
         buffer.write_bytes(sequence, IO::ByteFormat::LittleEndian)
       end
       
+      # An array of signatures in DER format.
       def sign(signatures : Array(Signature))
       end
       
