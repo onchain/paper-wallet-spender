@@ -55,6 +55,22 @@ describe OnChain::Protocol do
       unsigned_tx.hashes[0].public_key.should eq(pub_keys_hex[0])
       
       unsigned_tx.hashes[1].public_key.should eq(pub_keys_hex[1])
+      
+      tx_to_sign = OnChain::Protocol::UTXOTransaction.new(
+        unsigned_tx.txhex)
+        
+      tx_to_sign.to_hex.should eq(unsigned_tx.txhex)
+      
+      sig1 = OnChain::Protocol::Signature.new(
+        "02cc95dd4a29ccc38e46592602248e33ed56e8b3ea08d4d31f5688cbc52e85e203",
+        0, "")
+        
+      sig2 = OnChain::Protocol::Signature.new(
+        "03fd62b002c449b4d461a8582a5dc157ffc3fa99ec1d6df0ddb5800610fb3e66f2",
+        0, "")
+        
+      tx_to_sign.sign([sig1, sig2])
+      
     else
       true.should eq false
     end

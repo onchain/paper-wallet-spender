@@ -47,6 +47,13 @@ module OnChain
         buffer.write(script_sig)
         buffer.write_bytes(sequence, IO::ByteFormat::LittleEndian)
       end
+      
+      def sign(signatures : Array(Signature))
+      end
+      
+      def is_multi_sig?
+      end
+      
     end
   end
 end

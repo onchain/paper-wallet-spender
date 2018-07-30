@@ -65,6 +65,22 @@ module OnChain
         return OnChain.to_hex buffer.to_slice
       end
       
+      def sign(signatures : Array(Signature))
+      
+        inputs.each_with_index do |input, input_idx|
+          
+          # For every input get the relevant signatures.
+          relevant_sigs = signatures.select { |sig| 
+            sig.input_index == input_idx }
+          
+          # For single sig there will be just one entry in the array
+          # for multi sig more.
+          input.sign(relevant_sigs)
+          
+        end
+      
+      end
+      
       def parse_inputs(buffer : IO::Memory)
         inputs = [] of UTXOInput
         in_size = Transaction.parse_var_int(buffer)
