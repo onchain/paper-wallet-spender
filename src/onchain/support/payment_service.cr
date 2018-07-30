@@ -49,7 +49,7 @@ module OnChain
     end
     
     # Create an out with amount and address
-    private def self.create_output(coin : CoinType,
+    def self.create_output(coin : CoinType,
       amount_satoshi : UInt64, 
       dest_addr : Protocol::Address) : Protocol::UTXOOutput
     

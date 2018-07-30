@@ -56,7 +56,7 @@ module OnChain
           # Multi signature
           buffer = IO::Memory.new
           p2sh_multisig_script_sig(buffer, signatures)
-          script_sig = buffer.to_slice
+          @script_sig = buffer.to_slice
         else
           puts "Single sig signing"
         end
@@ -74,13 +74,18 @@ module OnChain
         signatures.each do |signature|
         
           sig_bytes = OnChain.to_bytes(signature.signature_der)
-          buffer.write_bytes(sig_bytes.size.to_u8)  # Push (num of bytes)
+          
+          # Push (num of bytes)
+          buffer.write_bytes(sig_bytes.size.to_u8 + 1, 
+            IO::ByteFormat::LittleEndian) 
+          
           buffer.write(sig_bytes)                     # Push the sig
           buffer.write_bytes(1.to_u8)   # Hash type
           
         end
         
         # Now write in the redeem script.
+        buffer.write_bytes(76.to_u8)   # OP_PUSHDATA1
         Transaction.write_var_int(buffer, script_sig.size.to_u64)
         buffer.write(script_sig)
   

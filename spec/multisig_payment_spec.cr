@@ -2,6 +2,78 @@ require "./spec_helper"
 
 describe OnChain::Protocol do
 
+  # https://www.soroushjp.com/2014/12/20/bitcoin-multisig-the-hard-way-
+  # understanding-raw-multisignature-bitcoin-transactions/
+  it "should agree with documented example" do
+  
+    key_a = "04a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a0f12af95" + 
+      "75fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd"
+
+    key_b = "046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f64" + 
+      "0de68c2fe913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187"
+
+    key_c = "0411ffd36c70776538d079fbae117dc38effafb33304af83ce4894589747aee1" + 
+      "ef992f63280567f52f5ba870678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e83"
+  
+    rs = OnChain::Protocol::RedemptionScript.new(2, [key_a, key_b, key_c])
+    
+    rs.to_address(OnChain::CoinType::Bitcoin).to_s.should eq(
+      "347N1Thc213QqfYCz3PZkjoJpNv5b14kBd")
+     
+      
+    tx_from_article = (<<-TX
+      01000000013dcd7d87904c9cb7f4b79f36b5a03f96e2e729284c09856238d5353e1182b002
+      00000000fd5d01004730440220762ce7bca626942975bfd5b130ed3470b9f538eb2ac120c2
+      043b445709369628022051d73c80328b543f744aa64b7e9ebefa7ade3e5c716eab4a09b408
+      d2c307ccd701483045022100abf740b58d79cab000f8b0d328c2fff7eb88933971d1b63f8b
+      99e89ca3f2dae602203354770db3cc2623349c87dea7a50cee1f78753141a5052b2d58aeb5
+      92bcf50f014cc9524104a882d414e478039cd5b52a92ffb13dd5e6bd4515497439dffd691a
+      0f12af9575fa349b5694ed3155b136f09e63975a1700c9f4d4df849323dac06cf3bd6458cd
+      41046ce31db9bdd543e72fe3039a1f1c047dab87037c36a669ff90e28da1848f640de68c2f
+      e913d363a51154a0c62d7adea1b822d05035077418267b1a1379790187410411ffd36c7077
+      6538d079fbae117dc38effafb33304af83ce4894589747aee1ef992f63280567f52f5ba870
+      678b4ab4ff6c8ea600bd217870a8b4f1f09f3a8e8353aeffffffff0130d900000000000019
+      76a914569076ba39fc4ff6a2291d9ea9196d8c08f9c7ab88ac00000000 
+    TX
+    ).gsub(/\s+/, "") 
+    
+    tx = OnChain::Protocol::UTXOTransaction.new(tx_from_article)
+    tx_from_article.should eq(tx.to_hex)
+    
+    # Create the outputs
+    dest_addr = OnChain::Protocol::Address.new(OnChain::CoinType::Bitcoin,
+      "18tiB1yNTzJMCg6bQS1Eh29dvJngq8QTfx")
+    
+    outputs = Array(OnChain::Protocol::UTXOOutput).new
+    outputs << OnChain::PaymentService.create_output(OnChain::CoinType::Bitcoin, 
+      55600.to_u64, dest_addr)
+      
+    unspent_out = OnChain::UnspentOut.new(
+      "02b082113e35d5386285094c2829e7e2963fa0b5369fb7f4b79c4c90877dcd3d",
+      BigInt.new(65600), 0, "1a8b0026343166625c7475f01e48b5ede8c0252e")
+      
+    unspent_outs = OnChain::UnspentOuts.new(BigInt.new(0), [unspent_out], [rs])
+    
+    # Create the transaction
+    our_tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::Bitcoin, 
+      unspent_outs, outputs)
+      
+    sig_a = OnChain::Protocol::Signature.new(key_a, 0, 
+      "30440220762ce7bca626942975bfd5b130ed3470b9f538eb2ac120c2043b4457093696" +
+      "28022051d73c80328b543f744aa64b7e9ebefa7ade3e5c716eab4a09b408d2c307ccd7") 
+      
+    sig_c = OnChain::Protocol::Signature.new(key_a, 0, 
+      "3045022100abf740b58d79cab000f8b0d328c2fff7eb88933971d1b63f8b99e89ca3f2" +
+      "dae602203354770db3cc2623349c87dea7a50cee1f78753141a5052b2d58aeb592bcf5" +
+      "0f") 
+      
+    tx_to_sign = OnChain::Protocol::UTXOTransaction.new(our_tx.txhex)
+    tx_to_sign.sign([sig_a, sig_c])
+    
+    tx_to_sign.to_hex.should eq(tx_from_article)
+    
+  end
+
   it "should parse and re-generate multi sig transaction" do
   
     OnChain::PROVIDERS[OnChain::CoinType::Testnet3] = BitcoinTestProvider.new
@@ -78,7 +150,7 @@ describe OnChain::Protocol do
         
       tx_to_sign.sign([sig1, sig2])
       
-      puts tx_to_sign.to_hex
+      #puts tx_to_sign.to_hex
       
     else
       true.should eq false

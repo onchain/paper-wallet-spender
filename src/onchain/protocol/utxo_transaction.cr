@@ -76,7 +76,6 @@ module OnChain
           # For single sig there will be just one entry in the array
           # for multi sig more.
           input.sign(relevant_sigs)
-          
         end
       
       end
