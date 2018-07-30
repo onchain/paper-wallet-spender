@@ -150,7 +150,23 @@ describe OnChain::Protocol do
         
       tx_to_sign.sign([sig1, sig2])
       
-      #puts tx_to_sign.to_hex
+      
+      
+      tx_hex = (<<-TX
+        0100000001bdf81543e420b7372f76f5be63e38a02f383dacc4a88eb6bdef5908f5c11ed
+        0101000000db004830450221009474dc743fd0f260e1ada66f13e2d24585ff9e533af653
+        2ca828b9622ce6c3d5022071b3e846858e11d5a47e6e0352ff6affbf92543abbdd609e56
+        2fe7af3ae32c7e0147304402204c4abb075dad7c798ad7196dce2f1f2167a9b68e488b8e
+        89496ff3b6253b4c7102207c7221098853c92c0ba80addcfa1e10db1654f2466f9df34a3
+        693432ffc34d91014c47522102cc95dd4a29ccc38e46592602248e33ed56e8b3ea08d4d3
+        1f5688cbc52e85e2032103fd62b002c449b4d461a8582a5dc157ffc3fa99ec1d6df0ddb5
+        800610fb3e66f252aeffffffff02a0860100000000001976a914abf102c1e98693c5949c
+        02559a8a8b33d102de5b88ac70f305000000000017a9147588fde54423e618415df6b792
+        bdd7e2da817ac78700000000
+      TX
+      ).gsub(/\s+/, "")
+      
+      tx_to_sign.to_hex.should eq(tx_hex)
       
     else
       true.should eq false
