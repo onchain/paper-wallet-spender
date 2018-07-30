@@ -78,6 +78,8 @@ describe OnChain::Protocol do
         
       tx_to_sign.sign([sig1, sig2])
       
+      puts tx_to_sign.to_hex
+      
     else
       true.should eq false
     end
