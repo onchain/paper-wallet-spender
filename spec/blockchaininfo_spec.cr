@@ -157,20 +157,47 @@ describe OnChain::BlockchaininfoProvider do
   end
 
   it "should get all address balances" do
+  
+    balance_json = (<<-BALANCES
+    {"recommend_include_fee":true,"info":{"nconnected":0,"conversion":100000000.
+    00000000,"symbol_local":{"code":"USD","symbol":"$","name":"U.S. dollar","con
+    version":12247.51742822,"symbolAppearsAfter":false,"local":true},"symbol_btc
+    ":{"code":"BTC","symbol":"BTC","name":"Bitcoin","conversion":100000000.00000
+    000,"symbolAppearsAfter":true,"local":false},"latest_block":{"block_index":1
+    712900,"hash":"00000000000000000000af96006d610288e3b5529eef41bb8145db21c6825
+    0c6","height":534379,"time":1532944681}},"wallet":{"n_tx":4991,"n_tx_filtere
+    d":4991,"total_received":6389396529243,"total_sent":6357972131513,"final_bal
+    ance":31424397730},"addresses":[{"address":"1Nh7uHdvY6fNwtQtM1G5EZAFPLC33B59
+    rB","n_tx":4986,"total_received":6389369233682,"total_sent":6357960855952,"f
+    inal_balance":31408377730,"change_index":0,"account_index":0},{"address":"1M
+    A2uGiKhGBXXjv2tGPQrtsqLcLEA7v3hH","n_tx":2,"total_received":9895561,"total_s
+    ent":9895561,"final_balance":0,"change_index":0,"account_index":0},{"address
+    ":"16KBLs5NVpUcrhmcC7eifHuSJjKLufApak","n_tx":3,"total_received":17400000,"t
+    otal_sent":1380000,"final_balance":16020000,"change_index":0,"account_index"
+    :0}],"txs":[{"hash":"f3b6b0f8fb227bf17d10fa7f27138dc64a7a949d82e24d7f27b2079
+    ee357454e","ver":1,"vin_sz":1,"vout_sz":2,"size":205,"weight":712,"fee":0,"r
+    elayed_by":"0.0.0.0","lock_time":0,"tx_index":363611980,"double_spend":false
+    ,"result":1272973707,"balance":31424397730,"time":1532933250,"block_height":
+    534362,"inputs":[{"sequence":4294967295,"script":"035a2708184d696e6564206279
+    20416e74506f6f6c383712205b5eb482f61b000028b40000","witness":"012000000000000
+    00000000000000000000000000000000000000000000000000000"}],"out":[{"value":127
+    2973707,"tx_index":363611980,"n":0,"spent":false,"script":"76a914edf10a7fac6
+    b32e24daa5305c723f3de58db1bc888ac","type":0,"addr":"1Nh7uHdvY6fNwtQtM1G5EZAF
+    PLC33B59rB"}]}]}
+    BALANCES
+    ).gsub(/\s+/, "")
 
     provider = OnChain::BlockchaininfoProvider.new(
       OnChain::CoinMarketCapRateProvider.new)
 
-    balance = provider.get_all_balances(OnChain::CoinType::Bitcoin,
-      ["16KBLs5NVpUcrhmcC7eifHuSJjKLufApak",
-        "1Nh7uHdvY6fNwtQtM1G5EZAFPLC33B59rB",
-        "1MA2uGiKhGBXXjv2tGPQrtsqLcLEA7v3hH"])
+    balance = provider.parse_balances(OnChain::CoinType::Bitcoin,
+      balance_json, false)
 
-      address_balance = JSON.parse(balance.to_json)
+    address_balance = JSON.parse(balance.to_json)
 
-      address_balance[0]["human_balance"].should eq(176.50910979)
-      address_balance[1]["human_balance"].should eq(0.0)
-      address_balance[2]["human_balance"].should eq(0.1602)
+    address_balance[0]["human_balance"].should eq(314.0837773)
+    address_balance[1]["human_balance"].should eq(0.0)
+    address_balance[2]["human_balance"].should eq(0.1602)
 
   end
 
