@@ -9,7 +9,7 @@ module OnChain
       dest_addr : Protocol::Address, 
       amount_satoshi : BigInt, 
       miners_fee : UInt64 = 40000,
-      fee_satoshi : BigInt = 0, 
+      fee_satoshi : BigInt = BigInt.new(0), 
       fee_addr : Protocol::Address = Nil) : UnsignedTransaction | NodeStatus
     
       total_amount = amount_satoshi + fee_satoshi + miners_fee
