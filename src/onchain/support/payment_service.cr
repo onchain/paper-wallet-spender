@@ -10,7 +10,7 @@ module OnChain
       amount_satoshi : BigInt, 
       miners_fee : UInt64 = 40000,
       fee_satoshi : BigInt = BigInt.new(0), 
-      fee_addr : Protocol::Address = Nil) : UnsignedTransaction | NodeStatus
+      fee_addr : Protocol::Address? = nil) : UnsignedTransaction | NodeStatus
     
       total_amount = amount_satoshi + fee_satoshi + miners_fee
       
@@ -25,7 +25,7 @@ module OnChain
         outputs << create_output(coin, amount_satoshi.to_u64, dest_addr)
           
         # Our fees
-        if fee_satoshi > DUST_SATOSHIES
+        if fee_addr && fee_satoshi > DUST_SATOSHIES
           outputs << create_output(coin, fee_satoshi.to_u64, fee_addr)
         end
         
