@@ -57,15 +57,39 @@ module OnChain
           buffer = IO::Memory.new
           p2sh_multisig_script_sig(buffer, signatures)
           @script_sig = buffer.to_slice
+        elsif signatures.size == 1 && script_sig[0] == 118
+          buffer = IO::Memory.new
+          to_pubkey_script_sig(buffer, signatures[0])
+          @script_sig = buffer.to_slice
         else
-          puts "Single sig signing"
+          raise "Not sure how to sign this."
         end
       
+      end
+      
+      # generate input script sig spending a pubkey output with given +signature+ and +pubkey+.
+      # returns a raw binary script sig of the form:
+      #  <signature> [<pubkey>]
+      private def to_pubkey_script_sig(buffer : IO::Memory, 
+        signature : Signature)
+        
+        # Add on hahs type SIG_ALL
+        sig_with_hash_type = signature.signature_der + "01"
+        
+        sig_bytes = OnChain.to_bytes(sig_with_hash_type)
+        
+        push_data(buffer, sig_bytes)
+        
+        public_key_bytes = OnChain.to_bytes(signature.public_key)
+        
+        push_data(buffer, public_key_bytes)
+        
       end
       
       # Best example is...
       # https://www.soroushjp.com/2014/12/20/bitcoin-multisig-the-hard-way-under
       # standing-raw-multisignature-bitcoin-transactions/
+      #
       private def p2sh_multisig_script_sig(buffer : IO::Memory,
         signatures : Array(Signature))
       
@@ -73,14 +97,12 @@ module OnChain
         
         signatures.each do |signature|
         
-          sig_bytes = OnChain.to_bytes(signature.signature_der)
+          # Add on hahs type SIG_ALL
+          sig_with_hash_type = signature.signature_der + "01"
+        
+          sig_bytes = OnChain.to_bytes(sig_with_hash_type)
           
-          # Push (num of bytes)
-          buffer.write_bytes(sig_bytes.size.to_u8 + 1, 
-            IO::ByteFormat::LittleEndian) 
-          
-          buffer.write(sig_bytes)                     # Push the sig
-          buffer.write_bytes(1.to_u8)   # Hash type
+          push_data(buffer, sig_bytes)
           
         end
         
@@ -89,6 +111,36 @@ module OnChain
         Transaction.write_var_int(buffer, script_sig.size.to_u64)
         buffer.write(script_sig)
   
+      end
+      
+      # N/A	1-75	The next opcode bytes is data to be pushed onto the stack
+      #
+      # OP_PUSHDATA1	76	The next byte contains the number of bytes to be 
+      #   pushed onto the stack.
+      #
+      # OP_PUSHDATA2	77	The next two bytes contain the number of bytes 
+      #   to be pushed onto the stack in little endian order.
+      #
+      # OP_PUSHDATA4	78	The next four bytes contain the number of bytes to 
+      #   be pushed onto the stack in little endian order.
+      #
+      private def push_data(buffer : IO::Memory, data : Bytes)
+      
+        if data.size < 76
+          buffer.write_bytes(data.size.to_u8, IO::ByteFormat::LittleEndian)
+          buffer.write(data)
+        elsif data.size <= 255
+          buffer.write_bytes(76.to_u8, IO::ByteFormat::LittleEndian)
+          buffer.write_bytes(data.size.to_u8, IO::ByteFormat::LittleEndian)
+          buffer.write(data)
+        elsif data.size <= 65536
+          buffer.write_bytes(77.to_u8, IO::ByteFormat::LittleEndian)
+          buffer.write_bytes(data.size.to_u16, IO::ByteFormat::LittleEndian)
+          buffer.write(data)
+          
+          # Actually it goes even higher but we're never going to need it.
+        end
+      
       end
       
     end
