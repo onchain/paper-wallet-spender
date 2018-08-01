@@ -76,6 +76,7 @@ describe OnChain::Protocol do
 
   it "should parse and re-generate multi sig transaction" do
   
+    old_provider = OnChain::PROVIDERS[OnChain::CoinType::Testnet3]
     OnChain::PROVIDERS[OnChain::CoinType::Testnet3] = BitcoinTestProvider.new
     
     # pk1 = Bitcoin::Key.new "bad6e70318bc9eb421aec5696d2687fca54834b9cf695c041053c9f75f04b679"
@@ -171,6 +172,8 @@ describe OnChain::Protocol do
     else
       true.should eq false
     end
+    
+    OnChain::PROVIDERS[OnChain::CoinType::Testnet3] = old_provider
   
   end
   

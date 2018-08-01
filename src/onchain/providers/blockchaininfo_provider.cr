@@ -5,8 +5,11 @@ module OnChain
 
   class BlockchaininfoProvider < UTXOProvider
 
-    def initialize(rate_provider : RateProvider, history_limit = 20)
-      @url = "https://blockchain.info/"
+    def initialize(rate_provider : RateProvider, testnet = false, 
+      history_limit = 20)
+      
+      @url = testnet ? "https://testnet.blockchain.info/" : 
+        "https://blockchain.info/"
       @rate_provider = rate_provider
       @history_limit = history_limit
     end
