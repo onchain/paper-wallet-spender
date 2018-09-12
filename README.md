@@ -4,6 +4,15 @@ The paper wallet spender takes private keys and generates a spend transaction to
 
 The transction transfers 1% of the funds to the developer. This helps us maintain the project.
 
+Requires Python 3.7 for zcash blake2b support.
+
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz
+tar xzvf Python-3.7.0.tgz
+cd Python-3.7.0
+./configure
+make
+sudo cp python /usr/bin/python3
+
 ## Installation
 
 We will make binaries available soon.
