@@ -52,7 +52,7 @@ module OnChain
           raise "Invalid script for signing"
         end
         
-        if script_sig[script_sig.size - 1] == 174
+        if script_sig[script_sig.size - 1] == 174 # OP_CHECKMULTISIG
           # Multi signature
           buffer = IO::Memory.new
           p2sh_multisig_script_sig(buffer, signatures)

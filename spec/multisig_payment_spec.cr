@@ -73,6 +73,82 @@ describe OnChain::Protocol do
     tx_to_sign.to_hex.should eq(tx_from_article)
     
   end
+  
+  it "should sign and send 2 of 2" do
+  
+    key_a = "02859f774e3fb7d785ddd3fd2fb89cfd6d37ce5f6db197c3c5e48bfd039c575600"
+
+    key_b = "02119260a04662f14e584998bc384723123aa5c491501a20e150ff46445204483f"
+  
+    rs = OnChain::Protocol::RedemptionScript.new(2, [key_a, key_b])
+    
+    rs.to_address(OnChain::CoinType::Bitcoin).to_s.should eq(
+      "3GXz2rrm6ftsDusn66BCRA1V4Md1Jup19U")
+    
+    # Create the outputs
+    dest_addr = OnChain::Protocol::Address.new(OnChain::CoinType::Testnet3,
+      "mwC6ZaXyTVnFMNYt1WRRh7sEwbDA3oHcRw")
+    
+    outputs = Array(OnChain::Protocol::UTXOOutput).new
+    outputs << OnChain::PaymentService.create_output(OnChain::CoinType::Testnet3, 
+      100000.to_u64, dest_addr)
+      
+    dest_addr = OnChain::Protocol::Address.new(OnChain::CoinType::Testnet3,
+      "2N86C6bnni8QDRhWKmDo536zkGhqB5YjpPC")
+      
+    outputs << OnChain::PaymentService.create_output(OnChain::CoinType::Testnet3, 
+      860000.to_u64, dest_addr)
+     
+    #puts OnChain::BlockchaininfoProvider.new(OnChain::CoinMarketCapRateProvider.new, true).get_unspent_outs(OnChain::CoinType::Testnet3, ["2N86C6bnni8QDRhWKmDo536zkGhqB5YjpPC"]) 
+    unspent_out = OnChain::UnspentOut.new(
+      "114f298e4a70f65f3e65843299cefad5b247343edf15cbc16698094e5b14695e",
+      BigInt.new(1000000), 0, "a914a2d49082db7361042fa3fe449f4cfe3025b2929587")
+      
+    unspent_outs = OnChain::UnspentOuts.new(BigInt.new(0), [unspent_out], [rs])
+    
+    # Create the transaction
+    our_tx = OnChain::Protocol::Transaction.create(OnChain::CoinType::Bitcoin, 
+      unspent_outs, outputs)
+    
+    sig1 = <<-SIG
+    304402205d8d662baab4797b8d7c50cfe73eeca807b36d6a438088f8d4e7c738b232984102
+    2007ac35170fef390e04b1971308c260b1c668c03592e2a50e10e85182ec71e7c3
+    SIG
+    sig1 = sig1.gsub("\n", "")
+    
+    sig2 = <<-SIG
+    3045022100e99e76523de83886c40d2fe430f4b9c0fe97ab8d7f6eea24af0279921a3b8ecc
+    0220480566da0516bc066db0d094a7a1d34d1d92b03975a75971763ff6cbb048cfb3
+    SIG
+    sig2 = sig2.gsub("\n", "")
+    
+    sig_a = OnChain::Protocol::Signature.new(key_a, 0, sig1)
+    sig_b = OnChain::Protocol::Signature.new(key_b, 0, sig2)
+    
+    
+    tx_to_sign = OnChain::Protocol::UTXOTransaction.new(our_tx.txhex)
+    tx_to_sign.sign([sig_a, sig_b])
+    
+    # This tx was signed by this code and sent. Signatures came from bitoinjs
+    # running on custody.
+    # https://live.blockcypher.com/btc-testnet/tx/cc453dfe3b744cb7cc9ee8f128f532
+    # 2d0d723ca7232339920b64f024225d478f/
+    tx_sent_with_this_code = (<<-TX
+      01000000015e69145b4e099866c1cb15df3e3447b2d5face993284653e5ff6704a8e294f11
+      00000000db0047304402205d8d662baab4797b8d7c50cfe73eeca807b36d6a438088f8d4e7
+      c738b2329841022007ac35170fef390e04b1971308c260b1c668c03592e2a50e10e85182ec
+      71e7c301483045022100e99e76523de83886c40d2fe430f4b9c0fe97ab8d7f6eea24af0279
+      921a3b8ecc0220480566da0516bc066db0d094a7a1d34d1d92b03975a75971763ff6cbb048
+      cfb3014c47522102859f774e3fb7d785ddd3fd2fb89cfd6d37ce5f6db197c3c5e48bfd039c
+      5756002102119260a04662f14e584998bc384723123aa5c491501a20e150ff46445204483f
+      52aeffffffff02a0860100000000001976a914abf102c1e98693c5949c02559a8a8b33d102
+      de5b88ac601f0d000000000017a914a2d49082db7361042fa3fe449f4cfe3025b292958700
+      000000
+    TX
+    ).gsub(/\s+/, "") 
+    
+    tx_to_sign.to_hex.should eq(tx_sent_with_this_code)
+  end
 
   it "should parse and re-generate multi sig transaction" do
   
