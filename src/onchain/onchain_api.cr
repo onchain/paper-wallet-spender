@@ -51,10 +51,10 @@ module OnChain
     
     CoinType::Bitcoin => BlockchaininfoProvider.new(RATE_PROVIDER),
       
-    #CoinType::Testnet3 => InsightProvider.new(
-    #  "https://test-insight.bitpay.com/api/", RATE_PROVIDER),
+    CoinType::Testnet3 => InsightProvider.new(
+      "https://test-insight.bitpay.com/api/", RATE_PROVIDER),
     
-    CoinType::Testnet3 => BlockchaininfoProvider.new(RATE_PROVIDER, true),
+    #CoinType::Testnet3 => BlockchaininfoProvider.new(RATE_PROVIDER, true),
       
     CoinType::Bitcoin_Cash => InsightProvider.new(
       "https://cashexplorer.bitcoin.com/api/", RATE_PROVIDER),
