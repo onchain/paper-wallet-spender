@@ -107,9 +107,7 @@ module OnChain
         end
         
         # Now write in the redeem script.
-        buffer.write_bytes(76.to_u8)   # OP_PUSHDATA1
-        Transaction.write_var_int(buffer, script_sig.size.to_u64)
-        buffer.write(script_sig)
+        push_data(buffer, script_sig)
   
       end
       
