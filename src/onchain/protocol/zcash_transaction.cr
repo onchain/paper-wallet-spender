@@ -4,16 +4,20 @@ module OnChain
     
       property version_group_id : UInt32
       property join_split_size : UInt64
+      property shielded_spend_size : UInt64
+      property shielded_output_size : UInt64
       property expiry_height : UInt32
       
       def initialize(unspents : Array(UnspentOut), outputs : Array(UTXOOutput))
         
-        @ver = 2147483651
+        @ver = 0x80000004
         @inputs = Array(UTXOInput).new
         @outputs = outputs
         @lock_time = 0
-        @version_group_id = 63210096
+        @version_group_id = 0x03c48270
         @expiry_height = 0
+        @shielded_spend_size = 0
+        @shielded_output_size = 0
         @join_split_size = 0
         
         unspents.each do |unspent| 
@@ -35,6 +39,9 @@ module OnChain
         @lock_time = Transaction.readUInt32(buffer)
         @expiry_height = Transaction.readUInt32(buffer)
         
+        
+        @shielded_spend_size = Transaction.parse_var_int(buffer)
+        @shielded_output_size = Transaction.parse_var_int(buffer)
         @join_split_size = Transaction.parse_var_int(buffer)
         
       end
@@ -65,14 +72,25 @@ module OnChain
         # 6. hashJoinSplits
         buffer.write(OnChain.to_bytes("00000000000000000000000000000000000000" +
           "00000000000000000000000000"))
+
+        # 7. hashShieldedSpends (32-byte hash)
+        buffer.write(OnChain.to_bytes("00000000000000000000000000000000000000" +
+        "00000000000000000000000000"))
+
+        # 8. hashShieldedOutputs (32-byte hash)
+        buffer.write(OnChain.to_bytes("00000000000000000000000000000000000000" +
+        "00000000000000000000000000"))
         
-        # 7. nLockTime
+        # 9. nLockTime
         buffer.write_bytes(lock_time, IO::ByteFormat::LittleEndian)
         
-        # 8. expiryHeight
+        # 10. expiryHeight
         buffer.write_bytes(expiry_height, IO::ByteFormat::LittleEndian)
+
+        # 11 Value Balance
+        buffer.write(OnChain.to_bytes("0000000000000000"))
         
-        # 9. nHashType
+        # 12. nHashType
         buffer.write_bytes(1.to_u32, IO::ByteFormat::LittleEndian)
         
         # It's always an input for us, so this is just used to match the 
@@ -119,7 +137,12 @@ module OnChain
         
         buffer.write_bytes(lock_time, IO::ByteFormat::LittleEndian)
         buffer.write_bytes(expiry_height, IO::ByteFormat::LittleEndian)
+
+        # Vlaue Bytes
+        buffer.write(OnChain.to_bytes("0000000000000000"))
         
+        Transaction.write_var_int(buffer, shielded_spend_size.to_u64)
+        Transaction.write_var_int(buffer, shielded_output_size.to_u64)
         Transaction.write_var_int(buffer, join_split_size.to_u64)
       
         return OnChain.to_hex buffer.to_slice

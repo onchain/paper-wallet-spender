@@ -4,7 +4,6 @@ require "http/client"
 require "./support/**"
 require "./models/**"
 require "./providers/**"
-require "tempfile.cr"
 
 module OnChain
 
