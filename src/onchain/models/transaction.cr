@@ -90,7 +90,7 @@ module OnChain
       confirmations = tx["block_height"] != nil ? tx["block_height"].as_i : 0
       
       time = tx["confirmed"] != nil ? tx["confirmed"].as_s : ""
-      dt = Time.parse time, "%FT%X%z" 
+      dt = Time.parse_local time, "%FT%X%z" 
       
       usd_balance = 0.0.to_f64
       amount = BigInt.new tx["value"] != nil ? tx["value"].to_s : "0"
