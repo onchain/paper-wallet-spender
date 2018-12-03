@@ -51,6 +51,15 @@ module OnChain
       
       def signature_hash_for_zcash(input_idx : UInt64, prev_out_value : BigInt,
         input = true) : String
+
+        buffer = pre_image(input_idx, prev_out_value, input)
+          
+        return OnChain.to_hex blake2b_buffer(buffer, 
+          ZCASH_SIG_HASH_PERSONALIZATION)
+      end
+      
+      def pre_image(input_idx : UInt64, prev_out_value : BigInt,
+        input = true) : IO::Memory
         
         buffer = IO::Memory.new
         
@@ -113,9 +122,8 @@ module OnChain
           buffer.write_bytes(inputs[input_idx].sequence, 
             IO::ByteFormat::LittleEndian)
         end
-          
-        return OnChain.to_hex blake2b_buffer(buffer, 
-          ZCASH_SIG_HASH_PERSONALIZATION)
+
+        return buffer
       end
     
       def to_hex : String

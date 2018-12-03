@@ -61,7 +61,7 @@ describe OnChain::Protocol do
     the_hash = tx.signature_hash_for_zcash(0, BigInt.new(0), false)
       
     the_hash.should eq(
-      "9e62426d4725dab2dc339fb228e693f94942b40bde9d71308616b9453c887f56")
+      "fe0d13c2431813b2946223da62bb2c8049faa5b94e1b9a8e22863f3955b82c26")
     
     generated_tx = tx.to_hex
     
@@ -97,18 +97,16 @@ describe OnChain::Protocol do
     
     tx.join_split_size.should eq(0)
     
-    generated_tx = tx.to_hex
-    
-    tx_hex.should eq(generated_tx)
+    tx_hex.should eq(tx.to_hex)
     
     OnChain.to_hex(tx.zcash_prev_outs_hash).should eq(
       "fae31b8dec7b0b77e2c8d6b6eb0e7e4e55abc6574c26dd44464d9408a8e33f11")
       
-    the_hash = tx.signature_hash_for_zcash(0, BigInt.new(0x0000000002fa0f80))
+    the_hash = tx.signature_hash_for_zcash(0, BigInt.new(0x0000000002fa0f80), true)
 
     # Not sure if this is right. Need to find another test case.
     the_hash.should eq(
-      "291014a76f55ddd0e88322156a26deb1c038afc020c0146f40beab42bbdca673")
+      "fc30ff26d7d949d45b6c980c84d9f982ab7143caea8d34d26ee961a32c102bc2")
   end
   
   # https://raw.githubusercontent.com/zcash/zcash/master/src/test/data/sighash.json
