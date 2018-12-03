@@ -104,7 +104,7 @@ module OnChain
       
       hbal = amount.to_f64 / OnChain::WEI_PER_ETHER.to_f64
       
-      return Transaction.new(confirmations, dt.epoch, amount, hbal, address, is_deposit)
+      return Transaction.new(confirmations, dt.to_unix, amount, hbal, address, is_deposit)
       
     end
     
