@@ -130,7 +130,7 @@ describe OnChain::Protocol do
       unsigned_tx.hashes.size.should eq(1)
       
       unsigned_tx.hashes[0].hash_to_sign.should eq(
-        "d191e2d82d720c87199fb103175ee9db8b521fdaac3f6755b8893a902e7cd970")
+        "1bcfde1aa5d86baef5dfa628f36c1812094b5c500beab19ea2c527eb2d936a68")
       
       unsigned_tx.hashes[0].public_key.should eq(pub_keys_hex[0].pub_key_hex)
     else

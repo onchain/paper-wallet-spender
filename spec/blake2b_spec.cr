@@ -16,7 +16,7 @@ describe OnChain do
       "ec55f4afc6cebfe1c35bdcded7519ff6efb381ab1d5a8dd0060c13b2a512932b")
     
     OnChain.blake2b("", "ZcashSigHash").should eq(
-      "a8b7d33290ca936765a88d37c2a8fe739fecc2670df3068082a31209cd311ddd")
+      "7a45ddd061e80077023f8ac2436d21fb19b57ce7929df4ea3fff7bceefc15360")
       
   end
 end

@@ -48,6 +48,9 @@ module OnChain
       
       # Implementation of ZIP143
       # https://github.com/zcash/zips/blob/master/zip-0143.rst
+      # 
+      # Help from trezor implementation.
+      # https://github.com/trezor/trezor-core/blob/master/src/apps/wallet/sign_tx/zcash.py
       
       def signature_hash_for_zcash(input_idx : UInt64, prev_out_value : BigInt,
         input = true) : String
@@ -97,7 +100,7 @@ module OnChain
         buffer.write_bytes(expiry_height, IO::ByteFormat::LittleEndian)
 
         # 11 Value Balance
-        buffer.write(OnChain.to_bytes("0000000000000000"))
+        buffer.write_bytes(0.to_u64, IO::ByteFormat::LittleEndian)
         
         # 12. nHashType
         buffer.write_bytes(1.to_u32, IO::ByteFormat::LittleEndian)
@@ -111,6 +114,7 @@ module OnChain
             IO::ByteFormat::LittleEndian)
           
           # 10b. scriptCode
+          # This is why aip243 fails. Might be a multi sig output?
           Transaction.write_var_int(buffer, 
             inputs[input_idx].script_sig.size.to_u64)
           buffer.write(inputs[input_idx].script_sig)

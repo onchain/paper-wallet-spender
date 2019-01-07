@@ -155,7 +155,7 @@ module OnChain
   def self.blake2b(data, person)
   
     if person == "ZcashSigHash"
-      person = "ZcashSigHash\\\\x19\\\\x1b\\\\xa8\\\\x5b"
+      person = "ZcashSigHash\\\\xbb\\\\x09\\\\xb8\\\\x76"
     end
   
     cmd = "python3 -c \"import hashlib, sys; h = hashlib.blake2b(person = b\\\"#{person}\\\", digest_size=32); h.update(bytearray.fromhex(\\\"#{data}\\\")); print(h.hexdigest())\""   
