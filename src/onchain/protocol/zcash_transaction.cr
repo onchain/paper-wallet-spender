@@ -14,7 +14,7 @@ module OnChain
         @inputs = Array(UTXOInput).new
         @outputs = outputs
         @lock_time = 0
-        @version_group_id = 0x03c48270
+        @version_group_id = 0x892f2085 
         @expiry_height = 0
         @shielded_spend_size = 0
         @shielded_output_size = 0
