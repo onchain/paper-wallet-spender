@@ -76,15 +76,12 @@ module OnChain
     def get_all_balances(coin : CoinType, addresses : Array(String), set_rate = true)
 
       pipe_addresses = addresses.join("|")
-      
-      puts "here"
 
       all_balances = make_request(
         "multiaddr?active=#{pipe_addresses}", @url)
 
       case all_balances
       when String
-      puts all_balances
         return parse_balances(coin, all_balances, set_rate)
       end
       return NodeStatus.new all_balances, "Error retrieving addresses"

@@ -34,5 +34,20 @@ describe OnChain::Protocol do
       true.should eq(false)
     end
   end
+
+  
+  it "should get a bitcoin cash balances for a number of addresses" do
+
+    balance = OnChain::AddressService.get_balance(
+      OnChain::CoinType::Bitcoin_Cash, ["38ty1qB68gHsiyZ8k3RPeCJ1wYQPrUCPPr",
+        "bitcoincash:pqkh9ahfj069qv8l6eysyufazpe4fdjq3u4hna323j"])
+    
+    case balance
+    when NamedTuple(totals: OnChain::Balance, addresses: Array(OnChain::Balance))
+      balance[:totals].balance.should be > 10020000
+    else
+      true.should eq(false)
+    end
+  end
   
 end
