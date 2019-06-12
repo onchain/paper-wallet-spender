@@ -20,5 +20,19 @@ describe OnChain::Protocol do
       BigInt.new(500000), 0.to_u32).should eq(
       "7bfb153ec3b8d977352e1e0c074d9552916c4d476ed7e356c94563a4085950cf")
   end
+
+  
+  it "should get a balance" do
+
+    balance = OnChain::AddressService.get_balance(
+      OnChain::CoinType::Bitcoin_Cash, "38ty1qB68gHsiyZ8k3RPeCJ1wYQPrUCPPr")
+    
+    case balance
+    when OnChain::Balance
+      balance.balance.should be > 10020000
+    else
+      true.should eq(false)
+    end
+  end
   
 end

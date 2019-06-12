@@ -146,12 +146,16 @@ end
 # We supply the unspent outs so that we don't contatc the internet
 class ZCashTestProvider < OnChain::UTXOProvider
 
-  def address_history(coin : CoinType, addresses : Array(String))
-    return NodeStatus.new 500, "Error retrieving history"
+  def get_balance(coin : OnChain::CoinType, address : String, set_rate = true)
+    return OnChain::NodeStatus.new 500, "Error retrieving history"
+  end
+
+  def address_history(coin : OnChain::CoinType, addresses : Array(String))
+    return OnChain::NodeStatus.new 500, "Error retrieving history"
   end
   
-  def push_tx(coin : CoinType, tx : String)
-    return NodeStatus.new 500, "Error retrieving history"
+  def push_tx(coin : OnChain::CoinType, tx : String)
+    return OnChain::NodeStatus.new 500, "Error retrieving history"
   end
   
   def get_unspent_outs(coin : OnChain::CoinType, addresses : Array(String))
