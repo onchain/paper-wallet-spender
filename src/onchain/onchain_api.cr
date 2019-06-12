@@ -129,7 +129,7 @@ module OnChain
   
     bytes = [] of UInt8
     
-    (0...hex.size).step(2) do |i|
+    (0...hex.size - 1).step(2) do |i|
       bytes << (hex[i].to_s + hex[i+1].to_s).to_i(16).to_u8
     end
     
