@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/ianpurton0711/onchain.io/_apis/build/status/onchain.paper-wallet-spender?branchName=master)](https://dev.azure.com/ianpurton0711/onchain.io/_build/latest?definitionId=7&branchName=master)
+
 # Paper Wallet Spender
 
 The paper wallet spender takes private keys and generates a spend transaction to transfer funds out of the wallet.
