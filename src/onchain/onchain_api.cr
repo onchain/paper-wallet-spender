@@ -55,8 +55,7 @@ module OnChain
     
     #CoinType::Testnet3 => BlockchaininfoProvider.new(RATE_PROVIDER, true),
       
-    CoinType::Bitcoin_Cash => InsightProvider.new(
-      "https://rest.bitcoin.com/v2/address/", RATE_PROVIDER),
+    CoinType::Bitcoin_Cash => BitcoincomProvider.new(RATE_PROVIDER),
     CoinType::Bitcoin_Gold => InsightProvider.new(
       "https://explorer.bitcoingold.org/insight-api/", RATE_PROVIDER),
     #CoinType::Litecoin => InsightProvider.new(

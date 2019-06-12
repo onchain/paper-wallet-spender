@@ -22,7 +22,7 @@ describe OnChain::Protocol do
   end
 
   
-  it "should get a balance" do
+  it "should get a bitcoin cash balance" do
 
     balance = OnChain::AddressService.get_balance(
       OnChain::CoinType::Bitcoin_Cash, "38ty1qB68gHsiyZ8k3RPeCJ1wYQPrUCPPr")
