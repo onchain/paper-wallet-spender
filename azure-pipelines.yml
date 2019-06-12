@@ -17,6 +17,7 @@ steps:
   displayName: 'Build and Run the Specs'
 
 - task: PublishTestResults@2
+  condition: always() # Run this even if tests fail.
   inputs:
     testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit
     testResultsFiles: 'tmp/*.xml' 
