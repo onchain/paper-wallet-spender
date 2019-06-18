@@ -6,7 +6,7 @@ RUN apt-get update \
 RUN add-apt-repository ppa:deadsnakes/ppa
 
 RUN apt-get update \
-  && apt-get install -y python3.7
+  && apt-get install -y python3.7 curl
 
 RUN rm /usr/bin/python3
 
