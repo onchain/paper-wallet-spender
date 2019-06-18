@@ -50,4 +50,19 @@ describe OnChain::Protocol do
     end
   end
   
+  it "should get bitcoin cash unspent ous" do
+
+    unspents = OnChain::PROVIDERS[OnChain::CoinType::Bitcoin_Cash].get_unspent_outs(
+      OnChain::CoinType::Bitcoin_Cash, 
+      ["38ty1qB68gHsiyZ8k3RPeCJ1wYQPrUCPPr"])
+    
+    case unspents
+    when Array(OnChain::UnspentOut)
+      unspents.size.should be > 1
+    else
+      puts unspents
+      true.should eq(false)
+    end
+  end
+  
 end

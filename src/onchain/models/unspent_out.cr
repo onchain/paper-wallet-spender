@@ -21,12 +21,16 @@ module OnChain
       return UnspentOut.new(txid, BigInt.new(amount), vout, script_pub_key)
     end
     
-    def self.from_insight_json(utxo : JSON::Any)
+    def self.from_insight_json(utxo : JSON::Any, script : Nil | JSON::Any = nil)
       
       amount = utxo["satoshis"].as_i64
       txid = utxo["txid"].as_s
       vout = utxo["vout"].as_i
-      script_pub_key = utxo["scriptPubKey"].as_s
+      if script
+        script_pub_key = script.as_s
+      else
+        script_pub_key = utxo["scriptPubKey"].as_s
+      end
       
       return UnspentOut.new(txid, BigInt.new(amount), vout, script_pub_key)
     end

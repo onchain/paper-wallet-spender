@@ -49,19 +49,24 @@ module OnChain
 
     end
 
-    def get_unspent_outs(coin : CoinType, addresses : Array(String))
+    def get_unspent_outs(coin : CoinType, addresses : Array(String)) : Array(UnspentOut) | NodeStatus
 
-      comma_addresses = addresses.join(",")
-
-      utxos = make_request("unspent?active=#{comma_addresses}", @url)
+      addresses_array = "[\"" + addresses.join("\",\"") + "\"]"
+      data = "{\"addresses\":[\"bitcoincash:qzs02v05l7qs5s24srqju498qu55dwuj0cx5ehjm2c\",\"bitcoincash:qrehqueqhw629p6e57994436w730t4rzasnly00ht0\"]}"
+      utxos = post_request(
+        "address/utxo", data)
 
       case utxos
       when String
         utxo = [] of UnspentOut
         json = JSON.parse utxos
-        if json["unspent_outputs"]? != nil
-          json["unspent_outputs"].as_a.each do |j|
-            utxo << OnChain::UnspentOut.from_blockinfo_json(j)
+        
+        json.as_a.each do |j|
+          if j["utxos"]? != nil
+            j["utxos"].as_a.each do |ut|
+              script = j["scriptPubKey"]
+              utxo << UnspentOut.from_insight_json(ut, script)
+            end
           end
         end
         return utxo
@@ -70,14 +75,12 @@ module OnChain
 
     end
 
-    def get_all_balances(coin : CoinType, addresses : Array(String), set_rate = true)
+    def get_all_balances(coin : CoinType, addresses : Array(String), set_rate = true): Array(Balance) | NodeStatus
 
       addresses_array = "[\"" + addresses.join("\",\"") + "\"]"
 
       all_balances = post_request(
         "address/details", addresses_array, "addresses")
-
-      puts all_balances
 
       case all_balances
       when String
@@ -117,11 +120,17 @@ module OnChain
       return post_request(coin, "pushtx", tx_hex)
     end
 
-    private def post_request(coin, path : String, data : String,
-       form_param = "tx")
+    private def post_request(path : String, data : String)
 
-       response = HTTP::Client.post @url + path, form: "tx=#{data}"
-       return NodeStatus.new response.status_code, response.body
+       response = HTTP::Client.post(@url + path, 
+        HTTP::Headers{"accept" => "application/json", 
+          "Content-Type" => "application/json" }, 
+        body: data)
+
+        if response.status_code == 200
+          return response.body
+        end
+        return response.status_code
     end
 
   end
