@@ -50,8 +50,8 @@ module OnChain
     
     CoinType::Bitcoin => BlockchaininfoProvider.new(RATE_PROVIDER),
       
-    CoinType::Testnet3 => InsightProvider.new(
-      "https://test-insight.bitpay.com/api/", RATE_PROVIDER),
+    CoinType::Testnet3 => BlockcypherProvider.new(
+      "https://api.blockcypher.com/v1/btc/test3/", RATE_PROVIDER),
     
     #CoinType::Testnet3 => BlockchaininfoProvider.new(RATE_PROVIDER, true),
       

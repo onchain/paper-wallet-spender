@@ -108,6 +108,29 @@ module OnChain
       
     end
     
+    def self.from_blockcypher_ethereum_json(tx : JSON::Any, addresses : Array(String))
+    
+      confirmations = tx["block_height"] != nil ? tx["block_height"].as_i : 0
+      
+      time = tx["confirmed"] != nil ? tx["confirmed"].as_s : ""
+      dt = Time.parse_local time, "%FT%X%z" 
+      
+      usd_balance = 0.0.to_f64
+      amount = BigInt.new tx["value"] != nil ? tx["value"].to_s : "0"
+      
+      address = addresses.first
+      
+      is_deposit = false
+      
+      tx_input_n = tx["tx_input_n"] != nil ? tx["tx_input_n"].as_i : 0
+      is_deposit = true if tx_input_n == -1
+      
+      hbal = amount.to_f64 / OnChain::WEI_PER_ETHER.to_f64
+      
+      return Transaction.new(confirmations, dt.to_unix, amount, hbal, address, is_deposit)
+      
+    end
+    
     def self.from_etherscan_json(tx : JSON::Any, addresses : Array(String))
     
       confirmations = tx["blockNumber"] != nil ? tx["blockNumber"].as_i : 0

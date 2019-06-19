@@ -79,6 +79,20 @@ module OnChain
       return History.new(total_txs, txs)
     end
     
+    def self.from_blockcypher_ethereum_json(history : JSON::Any, addresses : Array(String))
+    
+      total_txs = 0
+      
+      txs = [] of Transaction
+      if history["txrefs"] != nil
+        history["txrefs"].as_a.each do |tx|
+          txs << Transaction.from_blockcypher_ethereum_json tx, addresses
+        end
+      end
+      
+      return History.new(total_txs, txs)
+    end
+    
     def self.from_etherscan_json(history : JSON::Any, addresses : Array(String))
     
       total_txs = 0

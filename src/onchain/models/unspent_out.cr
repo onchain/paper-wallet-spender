@@ -21,6 +21,16 @@ module OnChain
       return UnspentOut.new(txid, BigInt.new(amount), vout, script_pub_key)
     end
     
+    def self.from_blockcypher_json(utxo : JSON::Any)
+      
+      amount = utxo["value"].as_i64
+      txid = utxo["tx_hash"].as_s
+      vout = utxo["tx_output_n"].as_i
+      script_pub_key = utxo["script"].as_s
+      
+      return UnspentOut.new(txid, BigInt.new(amount), vout, script_pub_key)
+    end
+    
     def self.from_insight_json(utxo : JSON::Any, script : Nil | JSON::Any = nil)
       
       amount = utxo["satoshis"].as_i64

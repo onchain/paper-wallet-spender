@@ -110,7 +110,7 @@ module OnChain
       return balances
     end
 
-    def push_tx(coin : CoinType, tx_hex : String)
+    def push_tx(coin : CoinType, tx_hex : String) : NodeStatus
 
       tx = "{\"hexes\":[\"" + tx_hex + "\"]}"
       response = HTTP::Client.post(@url + "rawtransactions/sendRawTransaction", 

@@ -38,7 +38,7 @@ module OnChain
       case history
       when String
         history = convert_int_to_strings(history)
-        return OnChain::History.from_blockcypher_json(JSON.parse(history), addresses)
+        return OnChain::History.from_blockcypher_ethereum_json(JSON.parse(history), addresses)
       end
       return NodeStatus.new history, "Error retrieving history"
     
