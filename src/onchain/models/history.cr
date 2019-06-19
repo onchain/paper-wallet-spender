@@ -47,6 +47,24 @@ module OnChain
       return History.new(total_txs, txs)
     end
     
+    def self.from_bitcoincom_json(hist : JSON::Any, addresses : Array(String))
+    
+      # Comes back as array so just parse first one.
+      history = hist.as_a.first 
+
+      # We don't get info about number of tx's from bitcoin.com
+      total_txs = 0
+      
+      txs = [] of Transaction
+      if history["txs"] != nil
+        history["txs"].as_a.each do |tx|
+          txs << Transaction.from_insight_json tx, addresses
+        end
+      end
+      
+      return History.new(total_txs, txs)
+    end
+    
     def self.from_blockcypher_json(history : JSON::Any, addresses : Array(String))
     
       total_txs = 0

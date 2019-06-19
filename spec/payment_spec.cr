@@ -43,7 +43,6 @@ describe OnChain::Protocol do
       
       unsigned_tx.hashes[0].public_key.should eq(pub_keys_hex[0].pub_key_hex)
     else
-      puts unsigned_tx
       true.should eq false
     end
   

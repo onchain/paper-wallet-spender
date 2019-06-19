@@ -35,15 +35,13 @@ module OnChain
 
     def address_history(coin : CoinType, addresses : Array(String))
 
-      comma_addresses = addresses.join("|")
-
-      history = make_request(
-        "multiaddr?active=#{comma_addresses}&n=#{@history_limit}", @url)
+      addresses_array = "{\"addresses\":[\"" + addresses.join("\",\"") + "\"]}"
+      history = post_request("address/transactions", addresses_array)
 
       case history
       when String
         json = JSON.parse(history)
-        return OnChain::History.from_blockinfo_json(json, addresses)
+        return OnChain::History.from_bitcoincom_json(json, addresses)
       end
       return NodeStatus.new history, "Error retrieving history"
 
@@ -51,10 +49,8 @@ module OnChain
 
     def get_unspent_outs(coin : CoinType, addresses : Array(String)) : Array(UnspentOut) | NodeStatus
 
-      addresses_array = "[\"" + addresses.join("\",\"") + "\"]"
-      data = "{\"addresses\":[\"bitcoincash:qzs02v05l7qs5s24srqju498qu55dwuj0cx5ehjm2c\",\"bitcoincash:qrehqueqhw629p6e57994436w730t4rzasnly00ht0\"]}"
-      utxos = post_request(
-        "address/utxo", data)
+      addresses_array = "{\"addresses\":[\"" + addresses.join("\",\"") + "\"]}"
+      utxos = post_request("address/utxo", addresses_array)
 
       case utxos
       when String
@@ -77,10 +73,8 @@ module OnChain
 
     def get_all_balances(coin : CoinType, addresses : Array(String), set_rate = true): Array(Balance) | NodeStatus
 
-      addresses_array = "[\"" + addresses.join("\",\"") + "\"]"
-
-      all_balances = post_request(
-        "address/details", addresses_array, "addresses")
+      addresses_array = "{\"addresses\":[\"" + addresses.join("\",\"") + "\"]}"
+      all_balances = post_request("address/details", addresses_array)
 
       case all_balances
       when String

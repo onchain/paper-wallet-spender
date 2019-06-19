@@ -65,4 +65,22 @@ describe OnChain::Protocol do
     end
   end
   
+  it "should get bitcoin cash tx history" do
+
+    history = OnChain::PROVIDERS[OnChain::CoinType::Bitcoin_Cash].address_history(
+      OnChain::CoinType::Bitcoin_Cash, 
+      [
+        "bitcoincash:qzs02v05l7qs5s24srqju498qu55dwuj0cx5ehjm2c",
+        "bitcoincash:qrehqueqhw629p6e57994436w730t4rzasnly00ht0"
+      ])
+    
+    case history
+    when OnChain::History
+      history.txs.size.should be > 1
+    else
+      puts history
+      true.should eq(false)
+    end
+  end
+  
 end
