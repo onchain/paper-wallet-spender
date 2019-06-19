@@ -111,7 +111,14 @@ module OnChain
     end
 
     def push_tx(coin : CoinType, tx_hex : String)
-      return post_request(coin, "pushtx", tx_hex)
+
+      tx = "{\"hexes\":[\"" + tx_hex + "\"]}"
+      response = HTTP::Client.post(@url + "rawtransactions/sendRawTransaction", 
+       HTTP::Headers{"accept" => "application/json", 
+         "Content-Type" => "application/json" }, 
+       body: tx)
+
+       return NodeStatus.new response.status_code, response.body
     end
 
     private def post_request(path : String, data : String)
