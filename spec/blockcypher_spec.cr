@@ -62,7 +62,7 @@ describe OnChain::Protocol do
     push_tx = OnChain::PROVIDERS[OnChain::CoinType::Testnet3].push_tx(
       OnChain::CoinType::Testnet3, tx_hex)
     
-    push_tx.to_json.should eq("{\"status_code\":400,\"message\":\"{\\\"error\\\":\\\"Missing inputs\\\"}\"}")
+    push_tx.to_json.should contain("Error validating transaction")
 
 
   end

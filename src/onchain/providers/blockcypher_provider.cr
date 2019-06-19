@@ -68,7 +68,7 @@ module OnChain
 
     def push_tx(coin : CoinType, tx_hex : String) : NodeStatus
 
-      tx = "{\"tx\":[\"" + tx_hex + "\"]}"
+      tx = "{\"tx\":\"" + tx_hex + "\"}"
       response = HTTP::Client.post(@url + "txs/push", 
        HTTP::Headers{"accept" => "application/json", 
          "Content-Type" => "application/json" }, 
